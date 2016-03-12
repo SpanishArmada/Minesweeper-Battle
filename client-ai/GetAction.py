@@ -8,7 +8,7 @@ def getAction(numRows, numCols, gameState):
     for i in range(numRows):
         for j in range(numCols):
             curGrid = gameState[i][j]
-            if(curGrid == -1 or (9 <= curGrid <= 10)):
+            if(curGrid == -1 or (curGrid >= 9)):
                 continue
             walls = 0
             revealedBombs = 0
@@ -16,7 +16,7 @@ def getAction(numRows, numCols, gameState):
                 if(inBoard(numRows, numCols, i + dr, j + dc)):
                     if(0 <= gameState[i + dr][j + dc] <= 8):
                         ++walls
-                    elif(9 <= gameState[i + dr][j + dc] <= 10):
+                    elif(gameState[i + dr][j + dc] >= 9):
                         ++revealedBombs
                 else:
                     ++walls
