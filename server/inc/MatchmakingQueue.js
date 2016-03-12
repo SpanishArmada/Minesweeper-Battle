@@ -3,23 +3,23 @@ var assert = require('assert');
 module.exports = (function () {
 	var queue = [];
 
-	function insert(socket) {
-		if(queue.indexOf(socket) === -1) {
-			queue.push(socket);
+	function insert(player) {
+		if(queue.indexOf(player) === -1) {
+			queue.push(player);
+			console.log('%d players are queueing', queue.length);
 		}
-		console.log('%d players are queueing', queue.length);
 	}
 
 	function size() {
 		return queue.length;
 	}
 
-	function erase(socket) {
-		var idx = queue.indexOf(socket);
+	function erase(player) {
+		var idx = queue.indexOf(player);
 		if(idx > -1) {
 			queue.splice(idx, 1);
+			console.log('%d players are queueing', queue.length);
 		}
-		console.log('%d players are queueing', queue.length);
 	}
 
 	function get(numPlayers) {
