@@ -7,6 +7,7 @@ module.exports = (function () {
 		if(queue.indexOf(socket) === -1) {
 			queue.push(socket);
 		}
+		console.log('%d players are queueing', queue.length);
 	}
 
 	function size() {
@@ -18,6 +19,7 @@ module.exports = (function () {
 		if(idx > -1) {
 			queue.splice(idx, 1);
 		}
+		console.log('%d players are queueing', queue.length);
 	}
 
 	function get(numPlayers) {
