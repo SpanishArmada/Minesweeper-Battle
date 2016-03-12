@@ -122,16 +122,23 @@ var checkQueue = function (player) {
 	// Data to be sent to client
 		data = {
 			type: MessageType.MATCH_FOUND,
-			content: {}
+			content: {
+				players: []
+			}
 		}
 
 	data.content.board = gameState.gameBoard;
     console.log(data.content.board);
 	for(var i = 0; i < players.length; ++i) {
-		data.content.id = i;
-		data.content.name = players[i].name;
-		data.content.score = players[i].score;
+		data.content.players.push({
+			id: i,
+			name: players[i].name,
+			score: players[i].score
+		});
+	}
 
+	for(var i = 0; i < players.length; ++i) {
+		data.content.id = i;
 		players[i].ws.send(JSON.stringify(data));
 	}
 }
