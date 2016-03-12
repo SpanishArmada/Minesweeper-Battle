@@ -1,6 +1,6 @@
 // All requires
 var
-	config = require('./inc/Config.js'),
+	config = require('./inc/config.js'),
 	WebSocket = require('ws'),
 	fs = require('fs'),
 

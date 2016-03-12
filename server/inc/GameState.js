@@ -1,6 +1,6 @@
 var
 	GameConstant = require('./GameConstant.js'),
-	Scoring = require('./Scoring.js');
+	Scoring = require('./scoring.js');
 
 var Constant = {
 	UNREVEALED: -1,
