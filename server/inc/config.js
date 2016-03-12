@@ -1,5 +1,5 @@
 module.exports = (function () {
-	var port = 80,
+	var port = process.env.PORT || 3000,
 		protocol = 'ws',
 		hostname = 'localhost';
 
