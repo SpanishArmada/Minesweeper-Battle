@@ -1,7 +1,12 @@
 var config = require('./inc/Config.js'),
-	MessageType = require('./inc/MessageType.js');
 
-var io = require('socket.io')(config.port());
+	MessageType = require('./inc/MessageType.js'),
+
+	io = require('socket.io')(config.port()),
+
+	BoardGenerator = require('./inc/BoardGenerator.js'),
+
+	GameConstant = require('./inc/GameConstant.js');
 
 io.on('connection', function (socket) {
 	io.emit('this', { will: 'be received by everyone'});
@@ -14,3 +19,4 @@ io.on('connection', function (socket) {
 		io.emit('user disconnected');
 	});
 });
+
