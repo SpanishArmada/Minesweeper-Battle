@@ -25,7 +25,7 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 		}
 	}
     
-    this.gameBoard = gameBoard;
+    this.gameBoard = gameBoard; // added public reference to gameBoard
 
 	function inBoard(r, c) {
 		return 0 <= r && r < numRows
@@ -122,13 +122,13 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 		};
 	}
 
-	function flag(i, j) {
+	function flag(player, i, j) {
 		if(gameBoard[i][j] !== Constant.UNREVEALED) {
 			return 0;
 		}
 
 		if(hiddenBoard[i][j] === Constant.HAS_MINE) {
-			gameBoard[i][j] = Constant.CORRECT_FLAG;
+			gameBoard[i][j] = Constant.CORRECT_FLAG + player.idx;
 			return Scoring.CORRECT_FLAG_MULTIPLIER;
 		}
 

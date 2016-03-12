@@ -52,7 +52,7 @@ wss.on('connection', function (ws) {
 					result = {
 						type: MessageType.GAME_STATE,
 						content: {
-							idx: player.id,
+							idx: player.idx,
 							board: updates.gameBoard,
 							deltaScore: updates.deltaScore,
 							score: player.score
@@ -78,7 +78,7 @@ wss.on('connection', function (ws) {
 					result = {
 						type: MessageType.GAME_STATE,
 						content: {
-							idx: player.id,
+							idx: player.idx,
 							board: updates.gameBoard,
 							deltaScore: updates.deltaScore,
 							score: player.score

@@ -10,7 +10,7 @@ module.exports = (function () {
 		var boardId = nextBoardId.toString();
 		for(var i = 0; i < playerArr.length; ++i) {
 			playerArr[i].boardId = boardId;
-			playerArr[i].id = i;
+			playerArr[i].idx = i;
 		}
 
 		players[boardId] = playerArr;

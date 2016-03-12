@@ -4,5 +4,5 @@ module.exports = function (ws) {
 	this.score = 0;
 
 	this.boardId = null;
-	this.id = null;
+	this.idx = null;
 }
