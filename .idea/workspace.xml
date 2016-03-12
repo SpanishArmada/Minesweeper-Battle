@@ -25,7 +25,7 @@
         <entry file="file://$PROJECT_DIR$/server/inc/scoring.js">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="10" column="1" selection-start-line="10" selection-start-column="1" selection-end-line="10" selection-end-column="1" />
+              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
               <folding>
                 <element signature="e#0#43#0" expanded="false" />
               </folding>
@@ -36,8 +36,8 @@
       <file leaf-file-name="mapGenerator.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/inc/mapGenerator.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.66392094">
-              <caret line="120" column="64" selection-start-line="120" selection-start-column="64" selection-end-line="120" selection-end-column="64" />
+            <state vertical-scroll-proportion="0.7841845">
+              <caret line="90" column="59" selection-start-line="90" selection-start-column="59" selection-end-line="90" selection-end-column="59" />
               <folding>
                 <element signature="n#!!doc;n#shuffle#0" expanded="false" />
               </folding>
@@ -79,8 +79,11 @@
         <entry file="file://$PROJECT_DIR$/client/style.css">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="7" column="26" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="26" />
-              <folding />
+              <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+              <folding>
+                <marker date="1457775282029" expanded="true" signature="67:80" placeholder="{...}" />
+                <marker date="1457775282029" expanded="true" signature="209:212" placeholder="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -90,7 +93,9 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding />
+              <folding>
+                <marker date="1457775282025" expanded="true" signature="64:162" placeholder="{&quot;bombs&quot;: 41...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -311,15 +316,20 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <marker date="1457775282025" expanded="true" signature="64:162" placeholder="{&quot;bombs&quot;: 41...}" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/client/style.css">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="7" column="26" selection-start-line="7" selection-start-column="12" selection-end-line="7" selection-end-column="26" />
-          <folding />
+          <caret line="8" column="1" selection-start-line="8" selection-start-column="1" selection-end-line="8" selection-end-column="1" />
+          <folding>
+            <marker date="1457775282029" expanded="true" signature="67:80" placeholder="{...}" />
+            <marker date="1457775282029" expanded="true" signature="209:212" placeholder="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -350,7 +360,7 @@
     <entry file="file://$PROJECT_DIR$/server/inc/scoring.js">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="10" column="1" selection-start-line="10" selection-start-column="1" selection-end-line="10" selection-end-column="1" />
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
           <folding>
             <element signature="e#0#43#0" expanded="false" />
           </folding>
@@ -359,8 +369,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/inc/mapGenerator.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.66392094">
-          <caret line="120" column="64" selection-start-line="120" selection-start-column="64" selection-end-line="120" selection-end-column="64" />
+        <state vertical-scroll-proportion="0.7841845">
+          <caret line="90" column="59" selection-start-line="90" selection-start-column="59" selection-end-line="90" selection-end-column="59" />
           <folding>
             <element signature="n#!!doc;n#shuffle#0" expanded="false" />
           </folding>
