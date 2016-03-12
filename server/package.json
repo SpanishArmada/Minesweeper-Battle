@@ -1,0 +1,14 @@
+{
+  "name": "spanish-armada",
+  "version": "1.0.0",
+  "description": "multiplayer minesweeper server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "pciang, kenrick95, cacad101, dbakti7",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "^1.4.5"
+  }
+}
