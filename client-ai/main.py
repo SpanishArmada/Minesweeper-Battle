@@ -3,6 +3,7 @@ import threading
 import time
 
 def on_message(ws, message):
+    # edit here for getAction
     print(message)
 
 def on_error(ws, error):
