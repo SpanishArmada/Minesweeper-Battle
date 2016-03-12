@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var socket = io.connect('http://localhost:80/');
+socket.on('connect', function () {
+	var msgStr = JSON.stringify({name: 'tester'});
+	socket.emit('findMatch', msgStr);
+});
+
+</script>
+
+</body>
+</html>
