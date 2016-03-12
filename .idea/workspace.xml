@@ -21,13 +21,25 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="scoring.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="scoring.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/server/inc/scoring.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2520593">
+            <state vertical-scroll-proportion="0.0">
               <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
               <folding>
                 <element signature="e#0#43#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="mapGenerator.js" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/server/inc/mapGenerator.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.83196044">
+              <caret line="44" column="1" selection-start-line="44" selection-start-column="1" selection-end-line="44" selection-end-column="1" />
+              <folding>
+                <element signature="n#!!doc;n#shuffle#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -98,6 +110,7 @@
         <option value="$PROJECT_DIR$/server/scoring.js" />
         <option value="$PROJECT_DIR$/server/inc/index.js" />
         <option value="$PROJECT_DIR$/server/index.js" />
+        <option value="$PROJECT_DIR$/server/inc/mapGenerator.js" />
       </list>
     </option>
   </component>
@@ -335,10 +348,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/inc/scoring.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2520593">
+        <state vertical-scroll-proportion="0.0">
           <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
           <folding>
             <element signature="e#0#43#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/inc/mapGenerator.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.83196044">
+          <caret line="44" column="1" selection-start-line="44" selection-start-column="1" selection-end-line="44" selection-end-column="1" />
+          <folding>
+            <element signature="n#!!doc;n#shuffle#0" expanded="false" />
           </folding>
         </state>
       </provider>
