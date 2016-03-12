@@ -8,7 +8,7 @@ def on_message(ws, message):
     # edit here for getAction
     print(message)
     obj = json.loads(message)
-    if(message[0] == 'gameState'):
+    if(obj[0] == 'gameState'):
         content = obj['content']
         board = content['board']
         numRows = len(board)
