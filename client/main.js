@@ -179,11 +179,33 @@ Minesweeper.prototype.init = function() {
 document.addEventListener("DOMContentLoaded", function () {
     var minesweeper = new Minesweeper();
     minesweeper.drawMap();
+    var afm = 0, afmGo = true, afmDots = 0;
+    
+    function animateFindingMatch() {
+        afm++;
+        if (afm % 40 === 0) {
+            afmDots += 1;
+            afm = 0;
+        }
+        if (afmDots > 5) {
+            afmDots = 0;
+        }
+        var dots = "";
+        for (var i = 0; i < afmDots; i++) {
+            dots += ".";
+        }
+        document.getElementById("message").textContent = "Finding match" + dots;
+        
+        if (afmGo) {
+            window.requestAnimationFrame(animateFindingMatch);
+        }
+    }
     document.getElementById("start").addEventListener("click", function () {
         // send findMatch
         //minesweeper.init();
         
         document.getElementById("message").textContent = "Finding match";
+        animateFindingMatch();
         document.getElementById("cancel").style.display = "block";
         document.getElementById("start").style.display = "none";
     }, false);
