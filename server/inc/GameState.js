@@ -49,6 +49,7 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 					var head = q.shift(),
 						r = head.r,
 						c = head.c;
+                    console.log(head);
 
 					gameBoard[r][c] = hiddenBoard[r][c];
 					if(hiddenBoard[r][c] !== Constant.NO_MINE)
@@ -58,7 +59,7 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 						var next_r = r + dr[k],
 							next_c = c + dc[k];
 
-						if(inBoard(next_r, next_c)) {
+						if(inBoard(next_r, next_c) && gameBoard[next_r][next_c] === Constant.UNREVEALED) {
 							q.push({ r: next_r, c: next_c });
 						}
 					}
