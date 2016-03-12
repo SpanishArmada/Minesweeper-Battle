@@ -229,9 +229,19 @@ Minesweeper.prototype.handleRightClick = function (e) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    var ws = new WebSocket("wss://spanisharmada-server.azurewebsites.net/"); // TODO point to real server
-    var minesweeper = new Minesweeper(ws);
-    minesweeper.drawMap();
+    var ws = new WebSocket("ws://localhost:3000/"); // TODO point to real server
+    var minesweeper = null;
+    ws.onopen = function (e) {
+        minesweeper = new Minesweeper(ws);
+        minesweeper.drawMap();
+        console.log("done open");
+    };
+    window.onbeforeunload = function() {
+        // http://stackoverflow.com/questions/4812686/closing-websocket-correctly-html5-javascript
+        ws.onclose = function () {}; // disable onclose handler first
+        ws.close();
+    };
+    
     var afm = 0, afmGo = false, afmDots = 0;
     
     function animateFindingMatch() {
