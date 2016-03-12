@@ -28,7 +28,7 @@ wss.on('connection', function (ws) {
 				ws[inGameData].name = data.content.name;
 				MatchmakingQueue.insert(player);
 
-				checkQueue();
+				checkQueue(player);
 			}
 			break;
 
@@ -105,14 +105,14 @@ wss.on('connection', function (ws) {
 	});
 });
 
-var checkQueue = function () {
+var checkQueue = function (player) {
 	if(MatchmakingQueue.size() < 2) return;
 
 	var players = MatchmakingQueue.get(2),
 		randomRevealedRow = Math.random() * GameConstant.NUM_ROWS | 0,
 		randomRevealedCol = Math.random() * GameConstant.NUM_COLS | 0,
 
-		board = BoardController.newGame(players, BoardGenerator.generate(GameConstant.NUM_ROWS
+		gameState = BoardController.newGame(players, BoardGenerator.generate(GameConstant.NUM_ROWS
 			, GameConstant.NUM_COLS
 			, randomRevealedRow
 			, randomRevealedCol
@@ -125,7 +125,8 @@ var checkQueue = function () {
 			content: {}
 		}
 
-	data.content.board = board;
+	data.content.board = gameState.gameBoard;
+    console.log(data.content.board);
 	for(var i = 0; i < players.length; ++i) {
 		data.content.id = i;
 		data.content.name = players[i].name;

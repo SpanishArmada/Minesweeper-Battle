@@ -24,6 +24,8 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 			gameBoard[i][j] = Constant.UNREVEALED;
 		}
 	}
+    
+    this.gameBoard = gameBoard;
 
 	function inBoard(r, c) {
 		return 0 <= r && r < numRows
@@ -49,7 +51,6 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 					var head = q.shift(),
 						r = head.r,
 						c = head.c;
-                    console.log(head);
 
 					gameBoard[r][c] = hiddenBoard[r][c];
 					if(hiddenBoard[r][c] !== Constant.NO_MINE)

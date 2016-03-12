@@ -86,7 +86,7 @@ Minesweeper.prototype.start = function(username) {
     this.wsSend("findMatch", {
         name: username 
     });
-    this.ws.onmessage =  this.wsMessageHandler;
+    this.ws.onmessage =  this.wsMessageHandler.bind(this);
 };
 Minesweeper.prototype.cancel = function() {
     this.state.currentUsername = null;
@@ -177,9 +177,10 @@ Minesweeper.prototype.drawMap = function () {
 
 
 Minesweeper.prototype.updateMap = function(data) {
+    console.log(data);
     for (var i = 0; i < this.config.maze.height; i++) {
         for (var j = 0; j < this.config.maze.width; j++) {
-            this.state[i][j] = data[i][j];
+            this.state.map[i][j] = data[i][j];
         }
     }
     this.drawMap();
@@ -207,7 +208,7 @@ Minesweeper.prototype.handleClick = function (e) {
     this.wsSend("clickReveal", {
         i: i,
         j: j
-    });
+    }).bind(this);
 };
 
 Minesweeper.prototype.handleRightClick = function (e) {
@@ -224,7 +225,7 @@ Minesweeper.prototype.handleRightClick = function (e) {
     this.wsSend("clickFlag", {
         i: i,
         j: j
-    });
+    }).bind(this);
 };
 
 
