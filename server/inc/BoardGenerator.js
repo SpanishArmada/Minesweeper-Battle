@@ -55,6 +55,16 @@ module.exports = (function () {
 			&& 0 <= col && col < numCols;
 	}
 
+	function inEdge(numRows, numCols, row, col) {
+		return 0 == row || row == numRows-1 
+			|| 0 == col || col == numCols-1;
+	}
+
+	function inCorner(numRows, numCols, row, col) {
+		return (0 == row || row == numRows-1)
+			&& (0 == col || col == numCols-1);
+	}
+
 	function placeMines(numRows, numCols, shuffledGrids, numMines) {
 		/**
 		 * (numRows, numCols) is the board size
@@ -84,17 +94,32 @@ module.exports = (function () {
 				break;
 
 			var hasEight = false;
+			var hasFive = false;
+			var hasTwo = false;
+
 			for(var k = 0; k < dr.length; ++k) {
 				var row = coordinate[0] + dr[k],
 					col = coordinate[1] + dc[k];
 
+
 				if(inBoard(numRows, numCols, row, col)) {
 					++grids[row][col];
-					hasEight = hasEight || grids[row][col] === 8;
+					if(inCorner(numRows, numCols, row, col)) {
+						hasTwo = hasTwo || grids[row][col] === 2;
+					}
+					else if(inEdge(numRows, numCols, row, col)) {
+						hasFive = hasFive || grids[row][col] === 5;
+					}
+					else{
+						hasEight = hasEight || grids[row][col] === 8;	
+					}
+					
+
+
 				}
 			}
 
-			if(hasEight) {
+			if(hasTwo || hasFive || hasEight) {
 				for(var k = 0; k < dr.length; ++k) {
 					var row = coordinate[0] + dr[k],
 						col = coordinate[1] + dc[k];
