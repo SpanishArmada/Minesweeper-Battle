@@ -8,7 +8,7 @@ module.exports = (function () {
 
 	function newGame(playerArr, generatedBoard, numRows, numCols, randomRevealedRow, randomRevealedCol) {
 		var boardId = nextBoardId.toString();
-		for(var i = 0; i < players.length; ++i) {
+		for(var i = 0; i < playerArr.length; ++i) {
 			playerArr[i].boardId = boardId;
 			playerArr[i].id = i;
 		}
