@@ -35,6 +35,8 @@ module.exports = (function () {
 
 	return {
 		newGame: newGame,
-		get: get
+		getBoard: getBoard,
+		getPlayers: getPlayers,
+		clear: clear
 	}
 }());
