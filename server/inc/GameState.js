@@ -87,7 +87,7 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 					next_c = c + dc[k];
 
 				if(inBoard(next_r, next_c)
-					&& (gameBoard[next_r][next_c] === Constant.CORRECT_FLAG
+					&& (gameBoard[next_r][next_c] >= Constant.CORRECT_FLAG
 					|| gameBoard[next_r][next_c] === Constant.REVEALED_MINE))
 				{
 					++numMines;
