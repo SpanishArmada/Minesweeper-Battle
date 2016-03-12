@@ -69,7 +69,7 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
             });
         }
         // hacky implementation
-        document.getElementById("opp-name").style.display = "block";
+        document.getElementById("opp-name").style.display = "inline";
         document.getElementById("opp-name").textContent = content.opponents[0];
         
     } else if (type === "gameState") {
@@ -229,7 +229,7 @@ Minesweeper.prototype.handleRightClick = function (e) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    var ws = new WebSocket("wss://something"); // TODO point to real server
+    var ws = new WebSocket("wss://spanisharmada-server.azurewebsites.net/"); // TODO point to real server
     var minesweeper = new Minesweeper(ws);
     minesweeper.drawMap();
     var afm = 0, afmGo = false, afmDots = 0;
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
             afmGo = true;
             animateFindingMatch();
             document.getElementById("cancel").style.display = "block";
-            document.getElementById("my-name").style.display = "block";
+            document.getElementById("my-name").style.display = "inline";
             document.getElementById("start").style.display = "none";
             document.getElementById("prompt").style.display = "none";
         }

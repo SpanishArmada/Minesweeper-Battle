@@ -1,6 +1,6 @@
 module.exports = function (ws) {
 	this.ws = ws;
-	this.name = name;
+	this.name = null;
 	this.score = 0;
 	this.boardId = null;
 }
