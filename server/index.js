@@ -1,4 +1,5 @@
-var config = require('./inc/config.js');
+var config = require('./inc/Config.js'),
+	MessageType = require('./inc/MessageType.js');
 
 var io = require('socket.io')(config.port());
 
