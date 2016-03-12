@@ -80,20 +80,21 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 				c = j,
 				dr = [0, 1, 1, 1, 0, -1, -1, -1],
 				dc = [1, 1, 0, -1, -1, -1, 0, 1],
-				numFlags = 0;
+				numMines = 0;
 
 			for(var k = 0; k < 8; ++k) {
 				var next_r = r + dr[k],
 					next_c = c + dc[k];
 
 				if(inBoard(next_r, next_c)
-					&& gameBoard[next_r][next_c] === Constant.CORRECT_FLAG)
+					&& (gameBoard[next_r][next_c] === Constant.CORRECT_FLAG
+					|| gameBoard[next_r][next_c] === Constant.REVEALED_MINE))
 				{
-					++numFlags;
+					++numMines;
 				}
 			}
 
-			if(numFlags === gameBoard[i][j]) {
+			if(numMines === gameBoard[i][j]) {
 				for(var k = 0; k < 8; ++k) {
 					var next_r = r + dr[k],
 						next_c = c + dc[k];
