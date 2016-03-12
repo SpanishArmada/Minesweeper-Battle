@@ -1,2 +1,2 @@
 # SpanishArmada
-NTU IEEE Hackathon
+NTU IEEE Hackathon 2016
