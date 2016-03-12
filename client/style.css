@@ -63,6 +63,27 @@ button:hover {
     text-align: center;
     width: 100%;
 }
+#prompt {
+    position: absolute;
+    top: calc(50% - 110px);
+    z-index: 6;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+}
+#username-input {
+    font-family: 'Fira Mono', monospace;
+    background: rgba(0, 0, 0, .3);
+    color: #fff;
+    font-size: 20px;
+    border: 0;
+    border-bottom: 1px solid #eee;
+    padding: 0 5px;
+    width: 280px;
+    text-align: center;
+}
 #status {
     display: flex;
 }
