@@ -1,6 +1,6 @@
 var config = require('./inc/config.js');
 
-var io = require('socket.io')(80);
+var io = require('socket.io')(config.port());
 
 io.on('connection', function (socket) {
 	io.emit('this', { will: 'be received by everyone'});
