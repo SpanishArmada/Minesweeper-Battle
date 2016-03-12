@@ -4,6 +4,7 @@ html, body {
     width: 100%;
     color: #333;
     font-family: 'Fira Mono', monospace;
+    background: #eee;
 }
 h1 {
     margin-bottom: 10px;
@@ -89,4 +90,10 @@ button:hover {
 }
 #my, #opp {
     flex: 1 auto;
+}
+#my-name::before, #opp-name::before {
+    content: "(";
+}
+#my-name::after, #opp-name::after {
+    content: ")";
 }

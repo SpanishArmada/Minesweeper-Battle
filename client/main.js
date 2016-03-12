@@ -68,6 +68,9 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
                 score: 0
             });
         }
+        // hacky implementation
+        document.getElementById("opp-name").style.display = "block";
+        document.getElementById("opp-name").textContent = content.opponents[0];
         
     } else if (type === "gameState") {
         this.updateMap(content.board);
@@ -258,10 +261,12 @@ document.addEventListener("DOMContentLoaded", function () {
             var username = usernameElem.value;
             // send findMatch
             minesweeper.start(username);
+            document.getElementById("my-name").textContent = username;
             
             afmGo = true;
             animateFindingMatch();
             document.getElementById("cancel").style.display = "block";
+            document.getElementById("my-name").style.display = "block";
             document.getElementById("start").style.display = "none";
             document.getElementById("prompt").style.display = "none";
         }
@@ -275,6 +280,8 @@ document.addEventListener("DOMContentLoaded", function () {
         afmGo = false;
         document.getElementById("message").textContent = "";
         document.getElementById("cancel").style.display = "none";
+        document.getElementById("my-name").style.display = "none";
+        document.getElementById("opp-name").style.display = "none";
         document.getElementById("start").style.display = "block";
         document.getElementById("prompt").style.display = "block";
     }, false);
