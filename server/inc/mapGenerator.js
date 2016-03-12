@@ -81,14 +81,14 @@ function placeBombs(xSize, ySize, shuffledGrids, bombs) {
         ++grids[coordinate[0]-1][coordinate[1]+1];
         ++grids[coordinate[0]+1][coordinate[1]-1];
 
-        if((++grids[coordinate[0]+1][coordinate[1]] == 9) ||
-            (++grids[coordinate[0]-1][coordinate[1]] == 9) ||
-            (++grids[coordinate[0]][coordinate[1]+1] == 9) ||
-            (++grids[coordinate[0]][coordinate[1]-1] == 9) ||
-            (++grids[coordinate[0]+1][coordinate[1]+1] == 9) ||
-            (++grids[coordinate[0]-1][coordinate[1]-1] == 9) ||
-            (++grids[coordinate[0]-1][coordinate[1]+1] == 9) ||
-            (++grids[coordinate[0]+1][coordinate[1]-1] == 9)) {
+        if((++grids[coordinate[0]+1][coordinate[1]] == 8) ||
+            (++grids[coordinate[0]-1][coordinate[1]] == 8) ||
+            (++grids[coordinate[0]][coordinate[1]+1] == 8) ||
+            (++grids[coordinate[0]][coordinate[1]-1] == 8) ||
+            (++grids[coordinate[0]+1][coordinate[1]+1] == 8) ||
+            (++grids[coordinate[0]-1][coordinate[1]-1] == 8) ||
+            (++grids[coordinate[0]-1][coordinate[1]+1] == 8) ||
+            (++grids[coordinate[0]+1][coordinate[1]-1] == 8)) {
 
             --grids[coordinate[0]+1][coordinate[1]];
             --grids[coordinate[0]-1][coordinate[1]];
