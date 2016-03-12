@@ -25,7 +25,15 @@ def getAction(numRows, numCols, gameState):
             curGrid -= revealedBombs
             if(curGrid == 0):
                 # openGrid
-                # delay(0.5s)
+                for k in range(len(dr)):
+                    if(inBoard(numRows, numCols, i + dr, j + dc)):
+                        if(gameState[i + dr][j + dc] == -1):
+                            return ['open', i + dr, j + dc]
             elif(curGrid == space):
                 # flagGrid
-                # delay(0.5s)
+                for k in range(len(dr)):
+                    if(inBoard(numRows, numCols, i + dr, j + dc)):
+                        if(gameState[i + dr][j + dc] == -1):
+                            return ['flag', i + dr, j + dc]
+            else:
+                return ['finish']
