@@ -244,7 +244,7 @@ Minesweeper.prototype.handleRightClick = function (e) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    var ws = new WebSocket("ws://localhost:3000/"); // TODO point to real server
+    var ws = new WebSocket("ws://spanisharmada-pciang.rhcloud.com:8000/"); // TODO point to real server
     var minesweeper = null;
     ws.onopen = function (e) {
         minesweeper = new Minesweeper(ws);
