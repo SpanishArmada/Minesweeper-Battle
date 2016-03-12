@@ -177,9 +177,9 @@ Minesweeper.prototype.drawMap = function () {
             
             if (this.state.map[i][j] === 9) { // mine
                 this.drawBomb(i, j);
-            } else if (this.state.map[i][j] === 10) { // flag correct
+            } else if (this.state.map[i][j] >= 10) { // flag correct
                 // TODO which flag is whose?
-                this.drawFlag(i, j, 0);
+                this.drawFlag(i, j, this.state.map[i][j] - 10); // dirty dirty haxx
             } else if (1 <= this.state.map[i][j] && this.state.map[i][j] <= 8) {
                 this.drawNumber(i, j, this.state.map[i][j]);
             }
