@@ -14,6 +14,7 @@ var Minesweeper = function(ws) {
             color: "#DBDBDB",
             border: "#111111",
             revealedColor: "#F0F0F0",
+            hover: null
         }, 
         flag: [],
         bomb: null
@@ -26,12 +27,20 @@ var Minesweeper = function(ws) {
     var img = new Image(this.config.tile.size, this.config.tile.size);
     img.src = 'assets/bomb.png';
     this.config.bomb = img;
+    
+    img = new Image(this.config.tile.size, this.config.tile.size);
+    img.src = 'assets/hover.png';
+    this.config.tile.hover = img;
         
     this.state = {
         map: [],
         currentUsername: null,
         currentIdx: 0,
-        players: []
+        players: [],
+        hoverPrev: {
+            i: 0,
+            j: 0
+        }
     };
     
     this.state.map = [];
@@ -42,6 +51,7 @@ var Minesweeper = function(ws) {
         }
     }
     this.canvas = document.getElementById("canvas");
+    this.canvas.addEventListener('mousemove', this.handleHover.bind(this));
     this.canvas.addEventListener('click', this.handleClick.bind(this));
     this.canvas.addEventListener('contextmenu', this.handleRightClick.bind(this));
     
@@ -131,24 +141,20 @@ Minesweeper.prototype.drawNumber = function (i, j, number) {
     this.canvasContext.fillText(number, x, y);
     this.canvasContext.restore();
 }
-
-Minesweeper.prototype.drawBomb = function(i, j) {
+Minesweeper.prototype.drawImage = function(i, j, img) {
     var x = j * this.config.tile.size,
         y = i * this.config.tile.size;
-    this.drawRect(i, j, this.config.tile.revealedColor);
-    
     this.canvasContext.save();
-    this.canvasContext.drawImage(this.config.bomb, x, y);
+    this.canvasContext.drawImage(img, x, y);
     this.canvasContext.restore();
+};
+Minesweeper.prototype.drawBomb = function(i, j) {
+    this.drawRect(i, j, this.config.tile.revealedColor);
+    this.drawImage(i, j, this.config.bomb);
 }
 Minesweeper.prototype.drawFlag = function(i, j , type) {
-    var x = j * this.config.tile.size,
-        y = i * this.config.tile.size;
     this.drawRect(i, j, this.config.tile.revealedColor);
-    
-    this.canvasContext.save();
-    this.canvasContext.drawImage(this.config.flag[type], x, y);
-    this.canvasContext.restore();
+    this.drawImage(i, j, this.config.flag[type]);
 }
 Minesweeper.prototype.drawRect = function(i, j, fillStyle) {
     var x = j * this.config.tile.size,
@@ -166,24 +172,27 @@ Minesweeper.prototype.drawRect = function(i, j, fillStyle) {
     this.canvasContext.strokeRect(x, y, width, height);
     this.canvasContext.restore();
 }
+Minesweeper.prototype.drawTile = function(i, j) {
+    if (this.state.map[i][j] === -1) {
+        this.drawRect(i, j);
+    } else {
+        this.drawRect(i, j, this.config.tile.revealedColor);
+    }
+    
+    if (this.state.map[i][j] === 9) { // mine
+        this.drawBomb(i, j);
+    } else if (this.state.map[i][j] >= 10) { // flag correct
+        // TODO which flag is whose?
+        this.drawFlag(i, j, this.state.map[i][j] - 10); // dirty dirty haxx
+    } else if (1 <= this.state.map[i][j] && this.state.map[i][j] <= 8) {
+        this.drawNumber(i, j, this.state.map[i][j]);
+    }
+};
+
 Minesweeper.prototype.drawMap = function () {
     for (var i = 0; i < this.config.maze.height; i++) {
         for (var j = 0; j < this.config.maze.width; j++) {
-            if (this.state.map[i][j] === -1) {
-                this.drawRect(i, j);
-            } else {
-                this.drawRect(i, j, this.config.tile.revealedColor);
-            }
-            
-            if (this.state.map[i][j] === 9) { // mine
-                this.drawBomb(i, j);
-            } else if (this.state.map[i][j] >= 10) { // flag correct
-                // TODO which flag is whose?
-                this.drawFlag(i, j, this.state.map[i][j] - 10); // dirty dirty haxx
-            } else if (1 <= this.state.map[i][j] && this.state.map[i][j] <= 8) {
-                this.drawNumber(i, j, this.state.map[i][j]);
-            }
-            
+            this.drawTile(i, j);
         }
     }
 };
@@ -208,6 +217,16 @@ Minesweeper.prototype.getCoordFromEvent = function (e) {
     return [i, j];
 };
 
+Minesweeper.prototype.handleHover = function (e) {
+    var tmp = this.getCoordFromEvent(e),
+        i = tmp[0], j = tmp[1];
+    // console.log("Hover:", i, j);
+    
+    this.drawTile(this.state.hoverPrev.i, this.state.hoverPrev.j);
+    this.drawImage(i, j, this.config.tile.hover);
+    this.state.hoverPrev.i = i;
+    this.state.hoverPrev.j = j;
+};
 Minesweeper.prototype.handleClick = function (e) {
     var tmp = this.getCoordFromEvent(e),
         i = tmp[0], j = tmp[1];
