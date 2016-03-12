@@ -1,11 +1,21 @@
 <html>
     <head>
         <title>Spanish Armada - Minesweeper Battle!</title>
+        <link href='https://fonts.googleapis.com/css?family=Fira+Mono:400,700' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="style.css" />
     </head>
     <body>
         <main>
             <h1>Minesweeper Battle</h1>
+            <div id="status">
+                <div id="my">Your score: <span id="my-score">0</span></div>
+                <div id="opp">Opponent score: <span id="opp-score">0</span></div>
+            </div>
+            <div id="overlay">
+                <div id="message"></div>
+                <button id="start">Start</button>
+                <button id="cancel">Cancel</button>
+            </div>
             <canvas id="canvas" width="512" height="512"></canvas>
         </main>
         <script src="main.js"></script>

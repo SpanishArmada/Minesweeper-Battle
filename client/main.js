@@ -38,6 +38,8 @@ var Minesweeper = function() {
     this.canvas.addEventListener('contextmenu', this.handleRightClick.bind(this));
     
     this.canvasContext = this.canvas.getContext('2d');
+    
+    this.socket = null;//io();
 };
 Minesweeper.prototype.getColorFromNumber = function (number) {
     var ret = "#111";
@@ -59,7 +61,7 @@ Minesweeper.prototype.drawNumber = function (i, j, number) {
     this.drawRect(i, j, this.config.tile.revealedColor);
     
     this.canvasContext.save();
-    this.canvasContext.font = 'bold 20px monospace';
+    this.canvasContext.font = 'bold 20px "Fira Mono"';
     this.canvasContext.fillStyle = this.getColorFromNumber(number);
     this.canvasContext.fillText(number, x, y);
     this.canvasContext.restore();
@@ -137,10 +139,16 @@ Minesweeper.prototype.handleClick = function (e) {
     }
     
     // send (i, j) to server
+    var message = {
+        i: i,
+        j: j
+    }
+    this.socket.emit('clickReveal', message);
 };
 
-Minesweeper.prototype.receiveMap = function() {
+Minesweeper.prototype.receiveMap = function(data) {
     // update map
+    console.log(data);
     
     this.drawMap();
 };
@@ -157,22 +165,34 @@ Minesweeper.prototype.handleRightClick = function (e) {
     }
     
     // send (i, j) to server
+    var message = {
+        i: i,
+        j: j
+    }
+    this.socket.emit('clickFlag', message);
+};
+
+Minesweeper.prototype.init = function() {
+    this.socket.emit('clickFlag', message);
 };
 
 document.addEventListener("DOMContentLoaded", function () {
     var minesweeper = new Minesweeper();
-    minesweeper.state[5][4] = 0;
     minesweeper.drawMap();
-    minesweeper.drawNumber(5, 5, 1);
-    minesweeper.drawNumber(5, 6, 2);
-    minesweeper.drawNumber(5, 7, 3);
-    minesweeper.drawNumber(5, 8, 4);
-    minesweeper.drawNumber(5, 9, 5);
-    minesweeper.drawNumber(5, 10, 6);
-    minesweeper.drawNumber(5, 11, 7);
-    minesweeper.drawNumber(5, 12, 8);
-    minesweeper.drawBomb(5, 13);
-    minesweeper.drawFlag(5, 14, 0);
-    minesweeper.drawFlag(5, 15, 1);
-    
+    document.getElementById("start").addEventListener("click", function () {
+        // send findMatch
+        //minesweeper.init();
+        
+        document.getElementById("message").textContent = "Finding match";
+        document.getElementById("cancel").style.display = "block";
+        document.getElementById("start").style.display = "none";
+    }, false);
+    document.getElementById("cancel").addEventListener("click", function () {
+        // send cancelFindMatch
+        
+        
+        document.getElementById("message").textContent = "";
+        document.getElementById("cancel").style.display = "none";
+        document.getElementById("start").style.display = "block";
+    }, false);
 }, false);
