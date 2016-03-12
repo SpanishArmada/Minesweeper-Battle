@@ -1,28 +1,132 @@
-var GameConstant = require('./GameConstant.js');
+var
+	GameConstant = require('./GameConstant.js'),
+	Scoring = require('./Scoring.js');
 
-module.exports = function (players, board) {
+var Constant = {
+	UNREVEALED: -1,
+	NO_MINE: 0,
+	REVEALED_MINE: 9,
+	CORRECT_FLAG: 10,
+
+	// special case for hiddenBoard
+	HAS_MINE: 9,
+};
+
+module.exports = function (players, board, numRows, numCols, revealedRow, revealedCol) {
 	var players = players,
 		hiddenBoard = board;
 
-	// gameBoard contains revealed grids
-	var gameBoard = new Array(GameConstant.NUM_ROWS);
-
-	for (var i = 0; i < GameConstant.NUM_ROWS; ++i){
-		gameBoard[i] = new Array(GameConstant.NUM_COLS);
-		for (var j = 0; j < GameConstant.NUM_COLS; ++j){
-			gameBoard[i][j] = -1;
+	// this contains revealed grids
+	var gameBoard = new Array(numRows);
+	for(var i = 0; i < numRows; ++i){
+		gameBoard[i] = new Array(numCols);
+		for(var j = 0; j < numCols; ++j){
+			gameBoard[i][j] = Constant.UNREVEALED;
 		}
 	}
 
-	function clickReveal(player, i, j) {
-		if(gameBoard == -1){
-			if(hiddenBoard == 9){
-				player.score += GameConstant.MINES_EXPLODES;
+	function inBoard(r, c) {
+		return 0 <= r && r < numRows
+			&& 0 <= c && c < numCols;
+	}
+
+	function reveal(i, j) {
+		if(gameBoard[i][j] === Constant.UNREVEALED) {
+
+			if(hiddenBoard[i][j] === Constant.HAS_MINE) {
+				gameBoard[i][j] = Constant.REVEALED_MINE;
+				return Scoring.MINE_EXPLODED_MULTIPLIER;
+			}
+
+			else if(hiddenBoard[i][j] === Constant.NO_MINE) {
+				// BFS
+				var q = [],
+					dr = [0, 1, 1, 1, 0, -1, -1, -1],
+					dc = [1, 1, 0, -1, -1, -1, 0, 1];
+
+				q.push({ r: i, c: j });
+				while(q.length > 0) {
+					var head = q.shift(),
+						r = head.r,
+						c = head.c;
+
+					gameBoard[r][c] = hiddenBoard[r][c];
+					if(hiddenBoard[r][c] !== Constant.NO_MINE)
+						continue;
+
+					for(var k = 0; k < 8; ++k) {
+						var next_r = r + dr[k],
+							next_c = c + dc[k];
+
+						if(inBoard(next_r, next_c)) {
+							q.push({ r: next_r, c: next_c });
+						}
+					}
+				}
+
+				return Scoring.NEUTRAL_CLICK_MULTIPLIER;
+			}
+
+			else /* if is number */ {
+				gameBoard[i][j] = hiddenBoard[i][j];
+				return Scoring.NEUTRAL_CLICK_MULTIPLIER;
 			}
 		}
+
+		else /* if it is revealed */ {
+			var r = i,
+				c = j,
+				dr = [0, 1, 1, 1, 0, -1, -1, -1],
+				dc = [1, 1, 0, -1, -1, -1, 0, 1],
+				numFlags = 0;
+
+			for(var k = 0; k < 8; ++k) {
+				var next_r = r + dr[k],
+					next_c = c + dc[k];
+
+				if(inBoard(next_r, next_c)
+					&& gameBoard[next_r][next_c] === Constant.CORRECT_FLAG)
+				{
+					++numFlags;
+				}
+			}
+
+			if(numFlags === gameBoard[i][j]) {
+				for(var k = 0; k < 8; ++k) {
+					var next_r = r + dr[k],
+						next_c = c + dc[k];
+
+					if(inBoard(next_r, next_c)
+						&& gameBoard[next_r][next_c] === Constant.UNREVEALED)
+					{
+						reveal(next_r, next_c);
+					}
+				}
+			}
+
+			return Scoring.NEUTRAL_CLICK_MULTIPLIER;
+		}
 	}
 
-	function clickFlag(player, i, j) {
+	reveal(revealedRow, revealedCol);
+	this.clickReveal = function (player, i, j) {
+		player.score += reveal(i, j);
+	}
 
+	function flag(i, j) {
+		if(gameBoard[i][j] !== Constant.UNREVEALED) {
+			return 0;
+		}
+
+		if(hiddenBoard[i][j] === Constant.HAS_MINE) {
+			gameBoard[i][j] = Constant.CORRECT_FLAG;
+			return Scoring.CORRECT_FLAG_MULTIPLIER;
+		}
+
+		return Scoring.WRONG_FLAG_MULTIPLIER;
+	}
+
+	this.clickFlag = function (player, i, j) {
+		player.score += flag(i, j);
 	}
 }

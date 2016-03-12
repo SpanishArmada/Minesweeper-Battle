@@ -6,7 +6,7 @@ module.exports = (function () {
 	function insert(player) {
 		if(queue.indexOf(player) === -1) {
 			queue.push(player);
-			console.log('%d players are queueing', queue.length);
+			console.log('%d players are queueing.', queue.length);
 		}
 	}
 
@@ -18,7 +18,7 @@ module.exports = (function () {
 		var idx = queue.indexOf(player);
 		if(idx > -1) {
 			queue.splice(idx, 1);
-			console.log('%d players are queueing', queue.length);
+			console.log('%d players are queueing.', queue.length);
 		}
 	}
 
