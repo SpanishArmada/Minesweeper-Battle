@@ -114,7 +114,12 @@ function placeBombs(xSize, ySize, shuffledGrids, bombs) {
 
 
 function getMap(xSize, ySize, xClicked, yClicked, bombs) {
-
+    /**
+     * (xSize, ySize) is the board size
+     * (xClicked, yClicked) is the coordinate clicked the first time
+     * bombs is the number of bombs we want on the board
+     * return grids: 2D array, 0 for bomb, 1 - 8 for bombs count
+     */
     shuffledGrids = shuffleGrids(xSize, ySize, xClicked, yClicked, bombs);
     grids = placeBombs(xSize, ySize, shuffledGrids, bombs);
     return grids;
