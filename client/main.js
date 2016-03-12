@@ -132,6 +132,9 @@ Minesweeper.prototype.handleClick = function (e) {
     var tmp = this.getCoordFromEvent(e),
         i = tmp[0], j = tmp[1];
     console.log("Click:", i, j);
+    if (this.state[i][j] === 0 || this.state[i][j] > 8) {
+        return false;
+    }
     
     // send (i, j) to server
 };
@@ -147,6 +150,11 @@ Minesweeper.prototype.handleRightClick = function (e) {
     var tmp = this.getCoordFromEvent(e),
         i = tmp[0], j = tmp[1];
     console.log("RightClick:", i, j);
+    
+    
+    if (this.state[i][j] !== -1) {
+        return false;
+    }
     
     // send (i, j) to server
 };
