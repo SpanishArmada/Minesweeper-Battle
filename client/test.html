@@ -9,11 +9,7 @@
 
 <script type="text/javascript">
 
-var socket = io.connect('http://localhost:80/');
-socket.on('connect', function () {
-	var msgStr = JSON.stringify({name: 'tester'});
-	socket.emit('findMatch', msgStr);
-});
+var connection = new WebSocket('ws://localhost:80/');
 
 </script>
 
