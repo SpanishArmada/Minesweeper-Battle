@@ -110,7 +110,13 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 
 	reveal(revealedRow, revealedCol);
 	this.clickReveal = function (player, i, j) {
-		player.score += reveal(i, j);
+		var deltaScore = reveal(i, j);
+		player.score += deltaScore;
+
+		return {
+			deltaScore: deltaScore,
+			gameBoard: gameBoard
+		};
 	}
 
 	function flag(i, j) {
@@ -127,6 +133,12 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 	}
 
 	this.clickFlag = function (player, i, j) {
-		player.score += flag(i, j);
+		var deltaScore = flag(i, j);
+		player.score += deltaScore;
+
+		return {
+			deltaScore: deltaScore,
+			gameBoard: gameBoard
+		};
 	}
 }
