@@ -136,7 +136,7 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 	}
 
 	this.clickFlag = function (player, i, j) {
-		var deltaScore = flag(i, j);
+		var deltaScore = flag(player, i, j);
 		player.score += deltaScore;
 
 		return {
