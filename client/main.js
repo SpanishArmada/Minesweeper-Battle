@@ -30,7 +30,8 @@ var Minesweeper = function(ws) {
     this.state = {
         map: [],
         currentUsername: null,
-        opponents: []
+        currentIdx: 0,
+        players: []
     };
     
     this.state.map = [];
@@ -62,22 +63,34 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
     
     if (type === "matchFound") {
         this.updateMap(content.board);
-        for (var i = 0; i < content.opponents; i++) {
-            this.state.opponents.push({
-                name: content.opponents[i],
+        for (var i = 0; i < content.players; i++) {
+            this.state.players.push({
+                name: content.players[i].name,
                 score: 0
             });
         }
+        this.state.currentIdx = content.idx;
+        console.log(!content.idx);
+        
         // hacky implementation
         document.getElementById("opp-name").style.display = "inline";
-        document.getElementById("opp-name").textContent = content.opponents[0];
+        document.getElementById("opp-name").textContent = content.players[!this.state.currentIdx + 0].name; // TODO super hacky implementation :P
+        document.getElementById("message").textContent = "";
+        document.getElementById("cancel").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
         
     } else if (type === "gameState") {
         this.updateMap(content.board);
-        for (var i = 0; i < content.playerScores; i++) {
-            // TODO which one is P1's score?
-            this.states.oppponents[i] = content.playerScores[i];
+        this.state.players[content.idx] = content.score;
+        console.log(this.state.currentIdx);
+        console.log(content.idx);
+        // TODO ibid.
+        if (content.idx === this.state.currentIdx) {
+            document.getElementById("my-score").textContent = this.state.players[content.idx];
+        } else {
+            document.getElementById("opp-score").textContent = this.state.players[content.idx];
         }
+       
     }
 };
 
@@ -203,12 +216,13 @@ Minesweeper.prototype.handleClick = function (e) {
     if (this.state.map[i][j] === 0 || this.state.map[i][j] > 8) {
         return false;
     }
+    console.log(this);
     
     // send (i, j) to server
     this.wsSend("clickReveal", {
         i: i,
         j: j
-    }).bind(this);
+    });
 };
 
 Minesweeper.prototype.handleRightClick = function (e) {
@@ -225,7 +239,7 @@ Minesweeper.prototype.handleRightClick = function (e) {
     this.wsSend("clickFlag", {
         i: i,
         j: j
-    }).bind(this);
+    });
 };
 
 

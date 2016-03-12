@@ -52,7 +52,7 @@ wss.on('connection', function (ws) {
 					result = {
 						type: MessageType.GAME_STATE,
 						content: {
-							id: player.id,
+							idx: player.id,
 							board: updates.gameBoard,
 							deltaScore: updates.deltaScore,
 							score: player.score
@@ -78,7 +78,7 @@ wss.on('connection', function (ws) {
 					result = {
 						type: MessageType.GAME_STATE,
 						content: {
-							id: player.id,
+							idx: player.id,
 							board: updates.gameBoard,
 							deltaScore: updates.deltaScore,
 							score: player.score
@@ -128,17 +128,16 @@ var checkQueue = function (player) {
 		}
 
 	data.content.board = gameState.gameBoard;
-    console.log(data.content.board);
 	for(var i = 0; i < players.length; ++i) {
 		data.content.players.push({
-			id: i,
+			idx: i,
 			name: players[i].name,
 			score: players[i].score
 		});
 	}
 
 	for(var i = 0; i < players.length; ++i) {
-		data.content.id = i;
+		data.content.idx = i;
 		players[i].ws.send(JSON.stringify(data));
 	}
 }
