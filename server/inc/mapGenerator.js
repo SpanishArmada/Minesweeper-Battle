@@ -36,7 +36,7 @@ function shuffleGrids(xSize, ySize, xClicked, yClicked, bombs) {
     for(i = 0;i < xSize; ++i) {
         for(j = 0;j < ySize; ++j) {
             // skip if the grid is around the clicked grid
-            if((Math.abs(xSize - xClicked) <= 1) || (Math.abs(ySize - yClicked) <= 1))
+            if((Math.abs(i - xClicked) <= 1) && (Math.abs(j - yClicked) <= 1))
                 continue;
             grids.push([i, j]);
         }
