@@ -52,6 +52,8 @@ wss.on('connection', function (ws) {
 					result = {
 						type: MessageType.GAME_STATE,
 						content: {
+							i: i,
+							j: j,
 							idx: player.idx,
 							board: updates.gameBoard,
 							deltaScore: updates.deltaScore,
@@ -78,6 +80,8 @@ wss.on('connection', function (ws) {
 					result = {
 						type: MessageType.GAME_STATE,
 						content: {
+							i: i,
+							j: j,
 							idx: player.idx,
 							board: updates.gameBoard,
 							deltaScore: updates.deltaScore,
