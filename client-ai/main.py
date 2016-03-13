@@ -21,15 +21,20 @@ def on_message(ws, message):
             getActionRunning = True
             while(True):
                 action = getAction(numRows, numCols, board)
-                print(action)
                 if(action[0] == "open"):
-                    sendMessage = {"type": "clickReveal", "content": {"i": action[1], "j": action[2]}}
-                    ws.send(json.dumps(sendMessage))
-                    time.sleep(0.1)
+                    for act in action[1:0]:
+                        print(act)
+                        sendMessage = {"type": "clickReveal", "content": {"i": act[1], "j": act[2]}}
+                        ws.send(json.dumps(sendMessage))
+                        time.sleep(0.1)
+                    break
                 elif(action[0] == "flag"):
-                    sendMessage = {"type": "clickFlag", "content": {"i": action[1], "j": action[2]}}
-                    ws.send(json.dumps(sendMessage))
-                    time.sleep(0.3)
+                    for act in action[1:0]:
+                        print(act)
+                        sendMessage = {"type": "clickFlag", "content": {"i": act[1], "j": act[2]}}
+                        ws.send(json.dumps(sendMessage))
+                        time.sleep(0.25)
+                    break
                 elif(action[0] == "finish"):
                     break
                 

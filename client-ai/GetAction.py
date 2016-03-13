@@ -26,14 +26,18 @@ def getAction(numRows, numCols, gameState):
             print(i, j, walls, revealedBombs, space, curGrid)
             if(curGrid == 0):
                 # openGrid
+                actionList = ['open']
                 for k in range(len(dr)):
                     if(inBoard(numRows, numCols, i + dr[k], j + dc[k])):
                         if(gameState[i + dr[k]][j + dc[k]] == -1):
-                            return ['open', i + dr[k], j + dc[k]]
+                            actionList.append(i + dr[k], j + dc[k])
+                return actionList
             elif(curGrid == space):
                 # flagGrid
+                actionList = ['flag']
                 for k in range(len(dr)):
                     if(inBoard(numRows, numCols, i + dr[k], j + dc[k])):
                         if(gameState[i + dr[k]][j + dc[k]] == -1):
-                            return ['flag', i + dr[k], j + dc[k]]
+                            actionList.append(i + dr[k], j + dc[k])
+                return ['flag', i + dr[k], j + dc[k]]
     return ['finish']
