@@ -78,14 +78,13 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
     
     if (type === "matchFound") {
         this.updateMap(content.board);
-        for (var i = 0; i < content.players; i++) {
+        for (var i = 0; i < content.players.length; i++) {
             this.state.players.push({
                 name: content.players[i].name,
                 score: 0
             });
         }
         this.state.currentIdx = content.idx;
-        console.log(!content.idx);
         
         // hacky implementation
         document.getElementById("opp-name").style.display = "inline";
@@ -107,14 +106,14 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
         
     } else if (type === "gameState") {
         this.updateMap(content.board);
-        this.state.players[content.idx] = content.score;
+        this.state.players[content.idx].score = content.score;
         this.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore, 0);
         
         // TODO ibid.
         if (content.idx === this.state.currentIdx) {
-            document.getElementById("my-score").textContent = this.state.players[content.idx];
+            document.getElementById("my-score").textContent = this.state.players[content.idx].score;
         } else {
-            document.getElementById("opp-score").textContent = this.state.players[content.idx];
+            document.getElementById("opp-score").textContent = this.state.players[content.idx].score;
         }
        
     } else if (type === "endMatch") {
@@ -143,7 +142,8 @@ Minesweeper.prototype.getColorFromPlayer = function (idx) {
 };
 Minesweeper.prototype.endMatch = function() {
     var x = 4.5 * this.config.tile.size,
-        y = this.scoreCanvas.height / 2 - 50;
+        y = this.scoreCanvas.height / 2 - 50,
+        str = "";
     this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
     
     this.scoreCanvasContext.save();
@@ -152,7 +152,16 @@ Minesweeper.prototype.endMatch = function() {
     
     this.scoreCanvasContext.fillStyle = "#fff";
     this.scoreCanvasContext.font = 'bold 40px "Fira Mono"';
-    this.scoreCanvasContext.fillText("Game Over", x + .5 * this.config.tile.size, y);
+    
+    if (this.state.players[this.state.currentIdx].score > this.state.players[!this.state.currentIdx + 0].score) { // TODO ibid
+        str = "You win";
+    } else if (this.state.players[this.state.currentIdx].score === this.state.players[!this.state.currentIdx + 0].score){ // TODO ibid
+        str = "It's a draw";
+    } else {
+        str = "You lose";
+    }
+    
+    this.scoreCanvasContext.fillText(str, x + .5 * this.config.tile.size, y);
     this.scoreCanvasContext.font = 'bold 20px "Fira Mono"';
     this.scoreCanvasContext.fillText("Thank you for playing", x, y + 2 * this.config.tile.size);
     this.scoreCanvasContext.restore();
@@ -165,16 +174,16 @@ Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore,
     if (this.state.endMatch) {
         return;
     }
-    this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
-    if (k > 10 || deltaScore === 0) {
+    if (deltaScore < 0 && playerIdx !== this.state.currentIdx) {
         return;
     }
-    if (deltaScore < 0 && playerIdx !== this.state.currentIdx) {
+    this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
+    if (k > 20 || deltaScore === 0) {
         return;
     }
     
     var x = (j + .3) * this.config.tile.size,
-        y = (i + .3) * this.config.tile.size - k,
+        y = (i + .3) * this.config.tile.size - Math.floor(k / 2),
         str = deltaScore;
     if (deltaScore > 0) {
         str = "+" + deltaScore;
@@ -338,6 +347,8 @@ Minesweeper.prototype.handleRightClick = function (e) {
         i: i,
         j: j
     });
+    
+    this.endMatch();
 };
 
 
