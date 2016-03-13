@@ -36,6 +36,22 @@ module.exports = function (players, board, numRows, numCols, numMines, revealedR
 
 			if(hiddenBoard[i][j] === Constant.HAS_MINE) {
 				gameBoard[i][j] = Constant.REVEALED_MINE;
+
+
+				--numMines;
+				// If the last mine has been triggered
+				// This supposed to be a rather dirty haxx
+				if(numMines === 0) {
+					for(var r = 0; r < numRows; ++r) {
+						for(var c = 0; c < numCols; ++c) {
+							if(gameBoard[r][c] === Constant.UNREVEALED) {
+								reveal(r, c);
+							}
+						}
+					}
+				}
+
+
 				return Scoring.MINE_EXPLODED_MULTIPLIER;
 			}
 
