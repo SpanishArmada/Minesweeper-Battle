@@ -69,6 +69,8 @@ wss.on('connection', function (ws) {
 						// Do nothing
 					});
 				}
+
+				checkMatchEnd(players, gameState);
 			}
 			break;
 
