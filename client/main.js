@@ -105,6 +105,9 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
             document.getElementById("opp-score").textContent = this.state.players[content.idx];
         }
        
+    } else if (type === "endMatch") {
+        this.updateMap(content.board);
+        this.endMatch();
     }
 };
 
@@ -127,10 +130,35 @@ Minesweeper.prototype.getColorFromPlayer = function (idx) {
     }
     return color[idx];
 };
+Minesweeper.prototype.endMatch = function() {
+    var x = 4.5 * this.config.tile.size,
+        y = this.scoreCanvas.height / 2 - 50;
+    this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
+    
+    this.scoreCanvasContext.save();
+    this.scoreCanvasContext.fillStyle = "rgba(0, 0, 0, 0.6)";
+    this.scoreCanvasContext.fillRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
+    
+    this.scoreCanvasContext.fillStyle = "#fff";
+    this.scoreCanvasContext.font = 'bold 40px "Fira Mono"';
+    this.scoreCanvasContext.fillText("Game Over", x + .5 * this.config.tile.size, y);
+    this.scoreCanvasContext.font = 'bold 20px "Fira Mono"';
+    this.scoreCanvasContext.fillText("Thank you for playing", x, y + 2 * this.config.tile.size);
+    this.scoreCanvasContext.restore();
+    
+    // remove listener
+    
+    this.scoreCanvas.removeEventListener('mousemove', this.handleHover.bind(this));
+    this.scoreCanvas.removeEventListener('click', this.handleClick.bind(this));
+    this.scoreCanvas.removeEventListener('contextmenu', this.handleRightClick.bind(this));
+};
 
 Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore, k) {
     this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
     if (k > 10 || deltaScore === 0) {
+        return;
+    }
+    if (deltaScore < 0 && playerIdx !== this.state.currentIdx) {
         return;
     }
     
@@ -288,7 +316,6 @@ Minesweeper.prototype.handleRightClick = function (e) {
     var tmp = this.getCoordFromEvent(e),
         i = tmp[0], j = tmp[1];
     console.log("RightClick:", i, j);
-    
     if (this.state.map[i][j] !== -1) {
         return false;
     }
