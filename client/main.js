@@ -89,7 +89,18 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
         
         // hacky implementation
         document.getElementById("opp-name").style.display = "inline";
-        document.getElementById("opp-name").textContent = content.players[!this.state.currentIdx + 0].name; // TODO super hacky implementation :P
+        document.getElementById("my-name").textContent = this.state.currentUsername + " ";
+        var temp = this.config.flag[this.state.currentIdx];
+        temp.width = 18;
+        temp.height = 18;
+        document.getElementById("my-name").appendChild(this.config.flag[this.state.currentIdx]);
+        
+        document.getElementById("opp-name").textContent = content.players[!this.state.currentIdx + 0].name + " "; // TODO super hacky implementation :P
+        temp = this.config.flag[!this.state.currentIdx + 0];
+        temp.width = 18;
+        temp.height = 18;
+        document.getElementById("opp-name").appendChild(temp);
+        
         document.getElementById("message").textContent = "";
         document.getElementById("cancel").style.display = "none";
         document.getElementById("overlay").style.display = "none";
