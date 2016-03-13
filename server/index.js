@@ -90,7 +90,9 @@ wss.on('connection', function (ws) {
 					};
 
 				for(var i = 0; i < players.length; ++i) {
-					players[i].ws.send(JSON.stringify(result));
+					players[i].ws.send(JSON.stringify(result), function (err) {
+						// Do nothing
+					});
 				}
 
 				checkMatchEnd(players);
