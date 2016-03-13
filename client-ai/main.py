@@ -57,7 +57,7 @@ def on_close(ws):
 def on_open(ws):
     global getActionRunning
     getActionRunning = False
-    x = json.dumps({"type":"findMatch", "content":{"name":"Deep CACAD AI"}})
+    x = json.dumps({"type":"findMatch", "content":{"name":"DeepCACADSweeper"}})
     ws.send(x)
 
 
