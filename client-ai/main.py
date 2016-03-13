@@ -55,20 +55,10 @@ def on_close(ws):
     print("### closed ###")
 
 def on_open(ws):
-##    ws.send("s")
     global getActionRunning
     getActionRunning = False
-    x = json.dumps({"type":"findMatch", "content":{"name":"AI"}})
+    x = json.dumps({"type":"findMatch", "content":{"name":"DeepCACADSweeper"}})
     ws.send(x)
-##    def run(*args):
-##        x = json.dumps(["findMatch", {"name": "AI"}])
-##        ws.send(x)
-##        print(x)
-####        for i in range(3):
-####            ws.send("Hello %d" % i)
-####        #ws.close()
-####        print("thread terminating...")
-##    threading.Thread(target=run).start()
 
 
 if __name__ == "__main__":
