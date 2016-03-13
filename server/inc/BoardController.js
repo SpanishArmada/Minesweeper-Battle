@@ -14,7 +14,7 @@ module.exports = (function () {
 		}
 
 		players[boardId] = playerArr;
-		board[boardId] = new GameState(playerArr, generatedBoard, numRows, numCols, randomRevealedRow, randomRevealedCol);
+		board[boardId] = new GameState(playerArr, generatedBoard, numRows, numCols, numMines, randomRevealedRow, randomRevealedCol);
 		++nextBoardId;
 
 		return board[boardId];
