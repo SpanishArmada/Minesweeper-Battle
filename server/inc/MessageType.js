@@ -47,5 +47,11 @@ module.exports = {
 		- board: Object,
 		- players: Array
 	*/
-	GAME_STATE: 'gameState'
+	GAME_STATE: 'gameState',
+
+	/*
+	Parameter:
+		N/A
+	*/
+	END_MATCH: 'endMatch'
 };
