@@ -30,7 +30,7 @@ def getAction(numRows, numCols, gameState):
                 for k in range(len(dr)):
                     if(inBoard(numRows, numCols, i + dr[k], j + dc[k])):
                         if(gameState[i + dr[k]][j + dc[k]] == -1):
-                            actionList.append(i + dr[k], j + dc[k])
+                            actionList.append([i + dr[k], j + dc[k]])
                 return actionList
             elif(curGrid == space):
                 # flagGrid
@@ -38,6 +38,6 @@ def getAction(numRows, numCols, gameState):
                 for k in range(len(dr)):
                     if(inBoard(numRows, numCols, i + dr[k], j + dc[k])):
                         if(gameState[i + dr[k]][j + dc[k]] == -1):
-                            actionList.append(i + dr[k], j + dc[k])
-                return ['flag', i + dr[k], j + dc[k]]
+                            actionList.append([i + dr[k], j + dc[k]])
+                return actionList
     return ['finish']
