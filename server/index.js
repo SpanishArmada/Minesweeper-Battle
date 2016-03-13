@@ -11,7 +11,10 @@ var
 	BoardController = require('./inc/BoardController.js'),
 	Player = require('./inc/Player.js');
 
-var wss = new WebSocket.Server({ port: config.port() }),
+var wss = new WebSocket.Server({
+		host: config.hostname(process.env.OPENSHIFT_NODEJS_IP),
+		port: config.port(process.env.OPENSHIFT_NODEJS_PORT)
+	}),
 	inGameData = 'inGameData';
 
 wss.on('connection', function (ws) {
@@ -95,7 +98,7 @@ wss.on('connection', function (ws) {
 					});
 				}
 
-				checkMatchEnd(players);
+				checkMatchEnd(players, gameState);
 			}
 			break;
 
@@ -150,8 +153,13 @@ var checkQueue = function (player) {
 	}
 }
 
-var checkMatchEnd = function (players) {
+var checkMatchEnd = function (players, gameState) {
 	for(var i = 0; i < players.length; ++i) {
-		players[i].ws.send(JSON.stringify({ type: MessageType.END_MATCH }));
+		players[i].ws.send(JSON.stringify({
+			type: MessageType.END_MATCH,
+			content: {
+				board: gameState.gameBoard;
+			}
+		}));
 	}
 }

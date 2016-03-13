@@ -129,6 +129,20 @@ module.exports = function (players, board, numRows, numCols, numMines, revealedR
 		if(hiddenBoard[i][j] === Constant.HAS_MINE) {
 			gameBoard[i][j] = Constant.CORRECT_FLAG + player.idx;
 			--numMines;
+
+			// If the last mine has been flagged
+			// This supposed to be a rather dirty haxx
+			if(numMines === 0) {
+				for(var r = 0; r < numRows; ++r) {
+					for(var c = 0; c < numCols; ++c) {
+						if(gameBoard[r][c] === Constant.UNREVEALED) {
+							reveal(r, c);
+						}
+					}
+				}
+			}
+
+
 			return Scoring.CORRECT_FLAG_MULTIPLIER;
 		}
 
