@@ -348,7 +348,6 @@ Minesweeper.prototype.handleRightClick = function (e) {
         j: j
     });
     
-    this.endMatch();
 };
 
 
