@@ -25,13 +25,11 @@ def on_message(ws, message):
                 if(action[0] == "open"):
                     sendMessage = {"type": "clickReveal", "content": {"i": action[1], "j": action[2]}}
                     ws.send(json.dumps(sendMessage))
-                    time.sleep(0.5)
-                    break
+                    time.sleep(0.1)
                 elif(action[0] == "flag"):
                     sendMessage = {"type": "clickFlag", "content": {"i": action[1], "j": action[2]}}
                     ws.send(json.dumps(sendMessage))
-                    time.sleep(0.5)
-                    break
+                    time.sleep(0.3)
                 elif(action[0] == "finish"):
                     break
                 
