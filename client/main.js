@@ -40,7 +40,8 @@ var Minesweeper = function(ws) {
         hoverPrev: {
             i: 0,
             j: 0
-        }
+        },
+        endMatch: false
     };
     
     this.state.map = [];
@@ -123,7 +124,6 @@ Minesweeper.prototype.cancel = function() {
     this.wsSend("cancelFindMatch");
 };
 Minesweeper.prototype.getColorFromPlayer = function (idx) {
-    console.log(idx);
     var color = ['#F40000', '#0050FF', '#EDDF00', '#00BF04'];
     if (idx < 0 || idx >= color.length) {
         return '#000';
@@ -147,13 +147,13 @@ Minesweeper.prototype.endMatch = function() {
     this.scoreCanvasContext.restore();
     
     // remove listener
-    
-    this.scoreCanvas.removeEventListener('mousemove', this.handleHover.bind(this));
-    this.scoreCanvas.removeEventListener('click', this.handleClick.bind(this));
-    this.scoreCanvas.removeEventListener('contextmenu', this.handleRightClick.bind(this));
+    this.state.endMatch = true;
 };
 
 Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore, k) {
+    if (this.state.endMatch) {
+        return;
+    }
     this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
     if (k > 10 || deltaScore === 0) {
         return;
@@ -284,6 +284,10 @@ Minesweeper.prototype.getCoordFromEvent = function (e) {
 };
 
 Minesweeper.prototype.handleHover = function (e) {
+    if (this.state.endMatch) {
+        return;
+    }
+    
     var tmp = this.getCoordFromEvent(e),
         i = tmp[0], j = tmp[1];
     // console.log("Hover:", i, j);
@@ -296,12 +300,11 @@ Minesweeper.prototype.handleHover = function (e) {
 Minesweeper.prototype.handleClick = function (e) {
     var tmp = this.getCoordFromEvent(e),
         i = tmp[0], j = tmp[1];
-    console.log("Click:", i, j);
+    // console.log("Click:", i, j);
     
-    if (this.state.map[i][j] === 0 || this.state.map[i][j] > 8) {
+    if (this.state.map[i][j] === 0 || this.state.map[i][j] > 8 || this.state.endMatch) {
         return false;
     }
-    console.log(this);
     
     // send (i, j) to server
     this.wsSend("clickReveal", {
@@ -314,8 +317,8 @@ Minesweeper.prototype.handleRightClick = function (e) {
     e.preventDefault();
     var tmp = this.getCoordFromEvent(e),
         i = tmp[0], j = tmp[1];
-    console.log("RightClick:", i, j);
-    if (this.state.map[i][j] !== -1) {
+    // console.log("RightClick:", i, j);
+    if (this.state.map[i][j] !== -1 || this.state.endMatch) {
         return false;
     }
     
@@ -333,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ws.onopen = function (e) {
         minesweeper = new Minesweeper(ws);
         minesweeper.drawMap();
-        console.log("done open");
+        console.log("Connection opened");
     };
     window.onbeforeunload = function() {
         // http://stackoverflow.com/questions/4812686/closing-websocket-correctly-html5-javascript
