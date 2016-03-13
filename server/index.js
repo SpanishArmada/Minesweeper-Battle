@@ -113,8 +113,8 @@ var checkQueue = function (player) {
 	if(MatchmakingQueue.size() < 2) return;
 
 	var players = MatchmakingQueue.get(2),
-		randomRevealedRow = Math.random() * GameConstant.NUM_ROWS | 0,
-		randomRevealedCol = Math.random() * GameConstant.NUM_COLS | 0,
+		randomRevealedRow = 1 + Math.random() * (GameConstant.NUM_ROWS - 2) | 0,
+		randomRevealedCol = 1 + Math.random() * (GameConstant.NUM_COLS - 2) | 0,
 
 		gameState = BoardController.newGame(players, BoardGenerator.generate(GameConstant.NUM_ROWS
 			, GameConstant.NUM_COLS
