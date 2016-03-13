@@ -154,12 +154,14 @@ var checkQueue = function (player) {
 }
 
 var checkMatchEnd = function (players, gameState) {
-	for(var i = 0; i < players.length; ++i) {
-		players[i].ws.send(JSON.stringify({
-			type: MessageType.END_MATCH,
-			content: {
-				board: gameState.gameBoard
-			}
-		}));
+	if(gameState.numMines() === 0) {
+		for(var i = 0; i < players.length; ++i) {
+			players[i].ws.send(JSON.stringify({
+				type: MessageType.END_MATCH,
+				content: {
+					board: gameState.gameBoard
+				}
+			}));
+		}
 	}
 }
