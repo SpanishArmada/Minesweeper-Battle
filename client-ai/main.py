@@ -6,9 +6,11 @@ import GetAction
 from GetAction import getAction
 
 getActionRunning = None
+checked = [[False for i in range(30)] for j in range(30)]
 def on_message(ws, message):
     # edit here for getAction
     global getActionRunning
+    global checked
     print(message)
     obj = json.loads(message)
     if(obj['type'] == 'gameState'):
@@ -20,20 +22,21 @@ def on_message(ws, message):
         if(not getActionRunning):
             getActionRunning = True
             while(True):
-                action = getAction(numRows, numCols, board)
+                action, checked = getAction(numRows, numCols, board, checked)
+                print(action)
                 if(action[0] == "open"):
-                    for act in action[1:0]:
+                    for act in action[1:]:
                         print(act)
-                        sendMessage = {"type": "clickReveal", "content": {"i": act[1], "j": act[2]}}
+                        sendMessage = {"type": "clickReveal", "content": {"i": act[0], "j": act[1]}}
                         ws.send(json.dumps(sendMessage))
                         time.sleep(0.1)
                     break
                 elif(action[0] == "flag"):
-                    for act in action[1:0]:
+                    for act in action[1:]:
                         print(act)
-                        sendMessage = {"type": "clickFlag", "content": {"i": act[1], "j": act[2]}}
+                        sendMessage = {"type": "clickFlag", "content": {"i": act[0], "j": act[1]}}
                         ws.send(json.dumps(sendMessage))
-                        time.sleep(0.25)
+                        time.sleep(0.1)
                     break
                 elif(action[0] == "finish"):
                     break
