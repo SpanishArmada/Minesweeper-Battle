@@ -19,7 +19,7 @@ var Minesweeper = function(ws) {
         flag: [],
         bomb: null
     };
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 4; i++) {
         var img = new Image(this.config.tile.size, this.config.tile.size);
         img.src = 'assets/flag-' + i + ".png";
         this.config.flag.push(img);
@@ -41,7 +41,8 @@ var Minesweeper = function(ws) {
             i: 0,
             j: 0
         },
-        endMatch: false
+        endMatch: false,
+        status: []
     };
     
     this.state.map = [];
@@ -83,22 +84,28 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
                 name: content.players[i].name,
                 score: 0
             });
+            var nameEl = document.createElement("div");
+            var temp = this.config.flag[i % this.config.flag.length];
+            temp.width = 18; temp.height = 18;
+            nameEl.appendChild(temp);
+            if (content.idx === i) {
+                temp.style.backgroundColor = "#ccc";
+            }
+            document.getElementById("name-items").appendChild(nameEl);
+            
+            
+            var scoreEl = document.createElement("div");
+            scoreEl.textContent = 0;
+            document.getElementById("score-items").appendChild(scoreEl);
+            
+            
+            
+            this.state.status.push({
+                nameEl: nameEl,
+                scoreEl: scoreEl,
+            });
         }
         this.state.currentIdx = content.idx;
-        
-        // hacky implementation
-        document.getElementById("opp-name").style.display = "inline";
-        document.getElementById("my-name").textContent = this.state.currentUsername + " ";
-        var temp = this.config.flag[this.state.currentIdx];
-        temp.width = 18;
-        temp.height = 18;
-        document.getElementById("my-name").appendChild(this.config.flag[this.state.currentIdx]);
-        
-        document.getElementById("opp-name").textContent = content.players[!this.state.currentIdx + 0].name + " "; // TODO super hacky implementation :P
-        temp = this.config.flag[!this.state.currentIdx + 0];
-        temp.width = 18;
-        temp.height = 18;
-        document.getElementById("opp-name").appendChild(temp);
         
         document.getElementById("message").textContent = "";
         document.getElementById("cancel").style.display = "none";
@@ -108,13 +115,7 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
         this.updateMap(content.board);
         this.state.players[content.idx].score = content.score;
         this.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore, 0);
-        
-        // TODO ibid.
-        if (content.idx === this.state.currentIdx) {
-            document.getElementById("my-score").textContent = this.state.players[content.idx].score;
-        } else {
-            document.getElementById("opp-score").textContent = this.state.players[content.idx].score;
-        }
+        this.state.status[content.idx].scoreEl.textContent = this.state.players[content.idx].score;
        
     } else if (type === "endMatch") {
         this.updateMap(content.board);
@@ -238,7 +239,7 @@ Minesweeper.prototype.drawBomb = function(i, j) {
 }
 Minesweeper.prototype.drawFlag = function(i, j , type) {
     this.drawRect(i, j, this.config.tile.revealedColor);
-    this.drawImage(i, j, this.config.flag[type]);
+    this.drawImage(i, j, this.config.flag[type % this.config.flag.length]);
 }
 Minesweeper.prototype.drawRect = function(i, j, fillStyle) {
     var x = j * this.config.tile.size,
@@ -394,12 +395,10 @@ document.addEventListener("DOMContentLoaded", function () {
             var username = usernameElem.value;
             // send findMatch
             minesweeper.start(username);
-            document.getElementById("my-name").textContent = username;
             
             afmGo = true;
             animateFindingMatch();
             document.getElementById("cancel").style.display = "block";
-            document.getElementById("my-name").style.display = "inline";
             document.getElementById("start").style.display = "none";
             document.getElementById("prompt").style.display = "none";
         }
@@ -413,8 +412,6 @@ document.addEventListener("DOMContentLoaded", function () {
         afmGo = false;
         document.getElementById("message").textContent = "";
         document.getElementById("cancel").style.display = "none";
-        document.getElementById("my-name").style.display = "none";
-        document.getElementById("opp-name").style.display = "none";
         document.getElementById("start").style.display = "block";
         document.getElementById("prompt").style.display = "block";
     }, false);

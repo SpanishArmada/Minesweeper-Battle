@@ -96,14 +96,24 @@ button:hover {
     text-align: center;
 }
 #status {
+    display: table;
+    width: 100%;
+}
+#names, #scores {
+    display: table-row;
+    width: 100%;
+}
+.table-first-col {
+    display: table-cell;
+    width: 100px;
+}
+.table-col {
+    display: table-cell;
+    vertical-align: middle;
+}
+.flex {
     display: flex;
 }
-#my, #opp {
-    flex: 1 auto;
-}
-#my-name::before, #opp-name::before {
-    content: "(";
-}
-#my-name::after, #opp-name::after {
-    content: ")";
+.flex > div {
+    flex: 1 0 auto;
 }
