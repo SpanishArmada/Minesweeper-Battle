@@ -92,6 +92,8 @@ wss.on('connection', function (ws) {
 				for(var i = 0; i < players.length; ++i) {
 					players[i].ws.send(JSON.stringify(result));
 				}
+
+				checkMatchEnd(players);
 			}
 			break;
 
@@ -120,7 +122,7 @@ var checkQueue = function (player) {
 			, GameConstant.NUM_COLS
 			, randomRevealedRow
 			, randomRevealedCol
-			, GameConstant.NUM_MINES), GameConstant.NUM_ROWS, GameConstant.NUM_COLS
+			, GameConstant.NUM_MINES), GameConstant.NUM_ROWS, GameConstant.NUM_COLS, GameConstant.NUM_MINES
 			, randomRevealedRow, randomRevealedCol),
 
 	// Data to be sent to client
@@ -143,5 +145,11 @@ var checkQueue = function (player) {
 	for(var i = 0; i < players.length; ++i) {
 		data.content.idx = i;
 		players[i].ws.send(JSON.stringify(data));
+	}
+}
+
+var checkMatchEnd = function (players) {
+	for(var i = 0; i < players.length; ++i) {
+		players[i].ws.send(JSON.stringify({ type: MessageType.END_MATCH }));
 	}
 }

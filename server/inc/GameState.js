@@ -12,9 +12,8 @@ var Constant = {
 	HAS_MINE: 9,
 };
 
-module.exports = function (players, board, numRows, numCols, revealedRow, revealedCol) {
-	var players = players,
-		hiddenBoard = board;
+module.exports = function (players, board, numRows, numCols, numMines, revealedRow, revealedCol) {
+	var hiddenBoard = board;
 
 	// this contains revealed grids
 	var gameBoard = new Array(numRows);
@@ -129,6 +128,7 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 
 		if(hiddenBoard[i][j] === Constant.HAS_MINE) {
 			gameBoard[i][j] = Constant.CORRECT_FLAG + player.idx;
+			--numMines;
 			return Scoring.CORRECT_FLAG_MULTIPLIER;
 		}
 
@@ -143,5 +143,9 @@ module.exports = function (players, board, numRows, numCols, revealedRow, reveal
 			deltaScore: deltaScore,
 			gameBoard: gameBoard
 		};
+	}
+
+	this.numMines = function () {
+		return numMines;
 	}
 }

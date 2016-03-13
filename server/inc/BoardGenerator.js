@@ -158,7 +158,3 @@ module.exports = (function () {
 	};
 
 }());
-
-
-
-
