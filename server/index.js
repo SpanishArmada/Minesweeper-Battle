@@ -158,7 +158,7 @@ var checkMatchEnd = function (players, gameState) {
 		players[i].ws.send(JSON.stringify({
 			type: MessageType.END_MATCH,
 			content: {
-				board: gameState.gameBoard;
+				board: gameState.gameBoard
 			}
 		}));
 	}
