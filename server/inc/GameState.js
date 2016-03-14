@@ -15,6 +15,15 @@ var Constant = {
 module.exports = function (players, board, numRows, numCols, numMines, revealedRow, revealedCol) {
 	var hiddenBoard = board;
 
+	var numPlayersOnline = players.length;
+	this.dc = function () {
+		--numPlayersOnline;
+	}
+
+	this.getNumPlayersOnline = function () {
+		return numPlayersOnline;
+	}
+
 	// this contains revealed grids
 	var gameBoard = new Array(numRows);
 	for(var i = 0; i < numRows; ++i){
@@ -31,26 +40,22 @@ module.exports = function (players, board, numRows, numCols, numMines, revealedR
 			&& 0 <= c && c < numCols;
 	}
 
+	function revealAll() {
+		for(var r = 0; r < numRows; ++r) {
+			for(var c = 0; c < numCols; ++c) {
+				if(gameBoard[r][c] === Constant.UNREVEALED) {
+					reveal(r, c);
+				}
+			}
+		}
+	}
+
 	function reveal(i, j) {
 		if(gameBoard[i][j] === Constant.UNREVEALED) {
 
 			if(hiddenBoard[i][j] === Constant.HAS_MINE) {
 				gameBoard[i][j] = Constant.REVEALED_MINE;
-
-
 				--numMines;
-				// If the last mine has been triggered
-				// This supposed to be a rather dirty haxx
-				if(numMines === 0) {
-					for(var r = 0; r < numRows; ++r) {
-						for(var c = 0; c < numCols; ++c) {
-							if(gameBoard[r][c] === Constant.UNREVEALED) {
-								reveal(r, c);
-							}
-						}
-					}
-				}
-
 
 				return Scoring.MINE_EXPLODED_MULTIPLIER;
 			}
@@ -131,6 +136,9 @@ module.exports = function (players, board, numRows, numCols, numMines, revealedR
 		var deltaScore = reveal(i, j);
 		player.score += deltaScore;
 
+		if(numMines === 0)
+			revealAll();
+
 		return {
 			deltaScore: deltaScore,
 			gameBoard: gameBoard
@@ -146,19 +154,6 @@ module.exports = function (players, board, numRows, numCols, numMines, revealedR
 			gameBoard[i][j] = Constant.CORRECT_FLAG + player.idx;
 			--numMines;
 
-			// If the last mine has been flagged
-			// This supposed to be a rather dirty haxx
-			if(numMines === 0) {
-				for(var r = 0; r < numRows; ++r) {
-					for(var c = 0; c < numCols; ++c) {
-						if(gameBoard[r][c] === Constant.UNREVEALED) {
-							reveal(r, c);
-						}
-					}
-				}
-			}
-
-
 			return Scoring.CORRECT_FLAG_MULTIPLIER;
 		}
 
@@ -168,6 +163,9 @@ module.exports = function (players, board, numRows, numCols, numMines, revealedR
 	this.clickFlag = function (player, i, j) {
 		var deltaScore = flag(player, i, j);
 		player.score += deltaScore;
+
+		if(numMines === 0)
+			revealAll();
 
 		return {
 			deltaScore: deltaScore,

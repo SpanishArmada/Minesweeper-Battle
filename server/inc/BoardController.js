@@ -33,10 +33,23 @@ module.exports = (function () {
 		delete board[boardId];
 	}
 
+	function dc(player) {
+		var boardId = player.boardId;
+		if(boardId === null)
+			return;
+
+		board[boardId].dc();
+
+		if(board[boardId].getNumPlayersOnline() === 0) {
+			clear(boardId);
+		}
+	}
+
 	return {
 		newGame: newGame,
 		getBoard: getBoard,
 		getPlayers: getPlayers,
-		clear: clear
+		clear: clear,
+		dc: dc,
 	}
 }());
