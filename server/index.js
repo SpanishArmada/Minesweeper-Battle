@@ -166,10 +166,10 @@ var checkMatchEnd = function (players, gameState) {
 			content: {
 				board: gameState.gameBoard
 			}
-		}));
+		}), function (err) { /* Do nothing */ });
 
 		players[i].ws.close();
 	}
 
-	BoardController.delete(players[0].boardId);
+	BoardController.clear(players[0].boardId);
 }
