@@ -12,8 +12,8 @@ var
 	Player = require('./inc/Player.js');
 
 var wss = new WebSocket.Server({
-		host: config.hostname(process.env.OPENSHIFT_NODEJS_IP),
-		port: config.port(process.env.OPENSHIFT_NODEJS_PORT)
+		host: config.hostname(process.env.OPENSHIFT_NODEJS_IP || 'localhost'),
+		port: config.port(process.env.OPENSHIFT_NODEJS_PORT || 3000)
 	}),
 	inGameData = 'inGameData';
 
@@ -65,9 +65,7 @@ wss.on('connection', function (ws) {
 					};
 
 				for(var i = 0; i < players.length; ++i) {
-					players[i].ws.send(JSON.stringify(result), function (err) {
-						// Do nothing
-					});
+					players[i].ws.send(JSON.stringify(result), function (err) { /* Do nothing */ });
 				}
 
 				checkMatchEnd(players, gameState);
@@ -97,9 +95,7 @@ wss.on('connection', function (ws) {
 					};
 
 				for(var i = 0; i < players.length; ++i) {
-					players[i].ws.send(JSON.stringify(result), function (err) {
-						// Do nothing
-					});
+					players[i].ws.send(JSON.stringify(result), function (err) { /* Do nothing */ });
 				}
 
 				checkMatchEnd(players, gameState);
@@ -117,6 +113,9 @@ wss.on('connection', function (ws) {
 		MatchmakingQueue.erase(player);
 
 		// Do anything with (code, data)
+
+		// Remove player from board
+		BoardController.dc(player);
 	});
 });
 
@@ -158,14 +157,19 @@ var checkQueue = function (player) {
 }
 
 var checkMatchEnd = function (players, gameState) {
-	if(gameState.numMines() === 0) {
-		for(var i = 0; i < players.length; ++i) {
-			players[i].ws.send(JSON.stringify({
-				type: MessageType.END_MATCH,
-				content: {
-					board: gameState.gameBoard
-				}
-			}));
-		}
+	if(gameState.numMines() > 0)
+		return;
+
+	for(var i = 0; i < players.length; ++i) {
+		players[i].ws.send(JSON.stringify({
+			type: MessageType.END_MATCH,
+			content: {
+				board: gameState.gameBoard
+			}
+		}), function (err) { /* Do nothing */ });
+
+		players[i].ws.close();
 	}
+
+	BoardController.clear(players[0].boardId);
 }
