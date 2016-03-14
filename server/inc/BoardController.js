@@ -35,8 +35,12 @@ module.exports = (function () {
 
 	function dc(player) {
 		var boardId = player.boardId;
-		if(boardId === null)
+		if(boardId === null
+			// Board has not been deleted
+			|| typeof board[boardId] === 'undefined')
+		{
 			return;
+		}
 
 		board[boardId].dc();
 
