@@ -99,7 +99,7 @@ button:hover {
     display: table;
     width: 100%;
 }
-#names, #scores {
+#scores {
     display: table-row;
     width: 100%;
 }
@@ -116,4 +116,7 @@ button:hover {
 }
 .flex > div {
     flex: 1 0 auto;
+}
+.flex > div img {
+    vertical-align: text-bottom;
 }

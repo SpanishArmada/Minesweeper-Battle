@@ -19,7 +19,7 @@ var Minesweeper = function(ws) {
         flag: [],
         bomb: null
     };
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 4; i++) {
         var img = new Image(this.config.tile.size, this.config.tile.size);
         img.src = 'assets/flag-' + i + ".png";
         this.config.flag.push(img);
@@ -41,7 +41,9 @@ var Minesweeper = function(ws) {
             i: 0,
             j: 0
         },
-        endMatch: false
+        endMatch: false,
+        status: [],
+        animateDeltaScoreTime: null
     };
     
     this.state.map = [];
@@ -83,22 +85,38 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
                 name: content.players[i].name,
                 score: 0
             });
+            var scoreItem = document.createElement("div");
+            
+            
+            var nameEl = document.createElement("div");
+            var flagEl = this.config.flag[i % this.config.flag.length];
+            flagEl.width = 17; flagEl.height = 17;
+            
+            var nameTextEl = document.createElement("span");
+            nameTextEl.textContent = "(" + content.players[i].name + ")";
+            
+            if (content.idx === i) {
+                flagEl.style.backgroundColor = "#ccc";
+                nameTextEl.style.backgroundColor = "#ccc";
+            }
+            
+            nameEl.appendChild(flagEl);
+            nameEl.appendChild(nameTextEl);
+            
+            var scoreEl = document.createElement("div");
+            scoreEl.textContent = 0;
+            
+            
+            scoreItem.appendChild(nameEl);
+            scoreItem.appendChild(scoreEl);
+            document.getElementById("score-items").appendChild(scoreItem);
+            
+            this.state.status.push({
+                nameEl: nameEl,
+                scoreEl: scoreEl,
+            });
         }
         this.state.currentIdx = content.idx;
-        
-        // hacky implementation
-        document.getElementById("opp-name").style.display = "inline";
-        document.getElementById("my-name").textContent = this.state.currentUsername + " ";
-        var temp = this.config.flag[this.state.currentIdx];
-        temp.width = 18;
-        temp.height = 18;
-        document.getElementById("my-name").appendChild(this.config.flag[this.state.currentIdx]);
-        
-        document.getElementById("opp-name").textContent = content.players[!this.state.currentIdx + 0].name + " "; // TODO super hacky implementation :P
-        temp = this.config.flag[!this.state.currentIdx + 0];
-        temp.width = 18;
-        temp.height = 18;
-        document.getElementById("opp-name").appendChild(temp);
         
         document.getElementById("message").textContent = "";
         document.getElementById("cancel").style.display = "none";
@@ -107,14 +125,8 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
     } else if (type === "gameState") {
         this.updateMap(content.board);
         this.state.players[content.idx].score = content.score;
-        this.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore, 0);
-        
-        // TODO ibid.
-        if (content.idx === this.state.currentIdx) {
-            document.getElementById("my-score").textContent = this.state.players[content.idx].score;
-        } else {
-            document.getElementById("opp-score").textContent = this.state.players[content.idx].score;
-        }
+        this.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore, new Date(), 0);
+        this.state.status[content.idx].scoreEl.textContent = this.state.players[content.idx].score;
        
     } else if (type === "endMatch") {
         this.updateMap(content.board);
@@ -143,7 +155,7 @@ Minesweeper.prototype.getColorFromPlayer = function (idx) {
 Minesweeper.prototype.endMatch = function() {
     var x = 4.5 * this.config.tile.size,
         y = this.scoreCanvas.height / 2 - 50,
-        str = "";
+        str = "Game over";
     this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
     
     this.scoreCanvasContext.save();
@@ -153,10 +165,22 @@ Minesweeper.prototype.endMatch = function() {
     this.scoreCanvasContext.fillStyle = "#fff";
     this.scoreCanvasContext.font = 'bold 40px "Fira Mono"';
     
-    if (this.state.players[this.state.currentIdx].score > this.state.players[!this.state.currentIdx + 0].score) { // TODO ibid
-        str = "You win";
-    } else if (this.state.players[this.state.currentIdx].score === this.state.players[!this.state.currentIdx + 0].score){ // TODO ibid
+    var maxScore = this.state.players[0].score,
+        maxScoreIdx = 0,
+        winDraw = false;
+    for (var i = 1; i < this.state.players.length; i++) {
+        if (this.state.players[i].score > maxScore) {
+            maxScore = this.state.players[i].score;
+            maxScoreIdx = i;
+            winDraw = false;
+        } else if (this.state.players[i].score === maxScore) {
+            winDraw = true;
+        }
+    }
+    if (winDraw) {
         str = "It's a draw";
+    } else if (maxScoreIdx === this.state.currentIdx) {
+        str = "You win";
     } else {
         str = "You lose";
     }
@@ -170,20 +194,26 @@ Minesweeper.prototype.endMatch = function() {
     this.state.endMatch = true;
 };
 
-Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore, k) {
+Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore, time, k) {
     if (this.state.endMatch) {
         return;
     }
     if (deltaScore < 0 && playerIdx !== this.state.currentIdx) {
         return;
     }
+    if (this.state.animateDeltaScoreTime > time) { // an event that is more recent occurs
+        console.log("discarded:", this.state.animateDeltaScoreTime, time);
+        return; // discard this old event
+    }
+    this.state.animateDeltaScoreTime = time;
+    
     this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
     if (k > 20 || deltaScore === 0) {
         return;
     }
     
     var x = (j + .3) * this.config.tile.size,
-        y = (i + .3) * this.config.tile.size - Math.floor(k / 2),
+        y = (i + .4) * this.config.tile.size - Math.floor(k / 2),
         str = deltaScore;
     if (deltaScore > 0) {
         str = "+" + deltaScore;
@@ -196,7 +226,7 @@ Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore,
     this.scoreCanvasContext.restore();
     
     window.requestAnimationFrame(function () {
-        this.animateDeltaScore(playerIdx, i, j, deltaScore, k + 1);
+        this.animateDeltaScore(playerIdx, i, j, deltaScore, time, k + 1);
     }.bind(this));
 };
 
@@ -238,7 +268,7 @@ Minesweeper.prototype.drawBomb = function(i, j) {
 }
 Minesweeper.prototype.drawFlag = function(i, j , type) {
     this.drawRect(i, j, this.config.tile.revealedColor);
-    this.drawImage(i, j, this.config.flag[type]);
+    this.drawImage(i, j, this.config.flag[type % this.config.flag.length]);
 }
 Minesweeper.prototype.drawRect = function(i, j, fillStyle) {
     var x = j * this.config.tile.size,
@@ -352,12 +382,14 @@ Minesweeper.prototype.handleRightClick = function (e) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    var ws = new WebSocket("ws://spanisharmada-pciang.rhcloud.com:8000/"); // TODO point to real server
+    document.getElementById("start").setAttribute("disabled", "disabled");
+    var ws = new WebSocket("wss://spanisharmada-pciang.rhcloud.com:8443/");
     var minesweeper = null;
     ws.onopen = function (e) {
         minesweeper = new Minesweeper(ws);
         minesweeper.drawMap();
         console.log("Connection opened");
+        document.getElementById("start").removeAttribute("disabled");
     };
     window.onbeforeunload = function() {
         // http://stackoverflow.com/questions/4812686/closing-websocket-correctly-html5-javascript
@@ -394,12 +426,10 @@ document.addEventListener("DOMContentLoaded", function () {
             var username = usernameElem.value;
             // send findMatch
             minesweeper.start(username);
-            document.getElementById("my-name").textContent = username;
             
             afmGo = true;
             animateFindingMatch();
             document.getElementById("cancel").style.display = "block";
-            document.getElementById("my-name").style.display = "inline";
             document.getElementById("start").style.display = "none";
             document.getElementById("prompt").style.display = "none";
         }
@@ -413,8 +443,6 @@ document.addEventListener("DOMContentLoaded", function () {
         afmGo = false;
         document.getElementById("message").textContent = "";
         document.getElementById("cancel").style.display = "none";
-        document.getElementById("my-name").style.display = "none";
-        document.getElementById("opp-name").style.display = "none";
         document.getElementById("start").style.display = "block";
         document.getElementById("prompt").style.display = "block";
     }, false);
