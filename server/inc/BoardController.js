@@ -29,6 +29,7 @@ module.exports = (function () {
 	}
 
 	function clear(boardId) {
+		console.log('Deleting board ID: ', boardId);
 		delete players[boardId];
 		delete board[boardId];
 	}
