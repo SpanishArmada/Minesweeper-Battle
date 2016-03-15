@@ -15,7 +15,10 @@ var wss = new WebSocket.Server({
 		host: config.hostname(process.env.OPENSHIFT_NODEJS_IP || 'localhost'),
 		port: config.port(process.env.OPENSHIFT_NODEJS_PORT || 3000)
 	}),
-	inGameData = 'inGameData';
+
+	inGameData = 'inGameData',
+
+	timerId = null;
 
 wss.on('connection', function (ws) {
 	console.log('Number of clients: %d', wss.clients.length);
@@ -31,7 +34,7 @@ wss.on('connection', function (ws) {
 				ws[inGameData].name = data.content.name;
 				MatchmakingQueue.insert(player);
 
-				checkQueue(player);
+				checkQueue();
 			}
 			break;
 
@@ -119,10 +122,22 @@ wss.on('connection', function (ws) {
 	});
 });
 
-var checkQueue = function (player) {
-	if(MatchmakingQueue.size() < 2) return;
+var checkQueue = function () {
+	// The next line of code does not throw error
+	// even if timerId is null
+	clearTimeout(timerId);
 
-	var players = MatchmakingQueue.get(2),
+	while(MatchmakingQueue.size() >= 4) {
+		dequeue(4);
+	}
+
+	var size = MatchmakingQueue.size();
+	if(2 <= size && size < 4)
+		timerId = setTimeout(dequeue(size), 10000);
+}
+
+var dequeue = function (numPlayers) {
+	var players = MatchmakingQueue.get(numPlayers),
 		randomRevealedRow = 1 + Math.random() * (GameConstant.NUM_ROWS - 2) | 0,
 		randomRevealedCol = 1 + Math.random() * (GameConstant.NUM_COLS - 2) | 0,
 
@@ -139,7 +154,7 @@ var checkQueue = function (player) {
 			content: {
 				players: []
 			}
-		}
+		};
 
 	data.content.board = gameState.gameBoard;
 	for(var i = 0; i < players.length; ++i) {
