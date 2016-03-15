@@ -132,8 +132,10 @@ var checkQueue = function () {
 	}
 
 	var size = MatchmakingQueue.size();
-	if(2 <= size && size < 4)
-		timerId = setTimeout(dequeue(size), 10000);
+	if(2 <= size && size < 4) {
+		console.log('Waiting for additional player for 10s (currently, %d players are in the queue)', size);
+		timerId = setTimeout(dequeue.bind(undefined, size), 10000);
+	}
 }
 
 var dequeue = function (numPlayers) {
