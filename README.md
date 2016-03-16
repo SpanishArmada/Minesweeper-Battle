@@ -37,7 +37,7 @@ Two-to-four-player real-time minesweeper battle on the same minefield, competing
 
 ## Future improvement
 
-1. ~~Allows more than 2 players at one board~~ Done per dfe5b807fc8bb2e38893dde4759868dbe1d32ad6
+1. ~~Allows more than 2 players at one board~~ Done per [dfe5b80](https://github.com/pciang/SpanishArmada/commit/dfe5b807fc8bb2e38893dde4759868dbe1d32ad6)
 2. Dynamic board size, according to number of players.
 3. Smarter AI. Currently, the AI only moves when there is a trivial action.
 4. Records player's game result and predict their skills accordingly.
