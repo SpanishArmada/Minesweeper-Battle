@@ -43,7 +43,8 @@ var Minesweeper = function(ws) {
         },
         endMatch: false,
         status: [],
-        animateDeltaScoreTime: null
+        animateDeltaScoreLoopRunning: false,
+        animateDeltaScoreQueue: []
     };
     
     this.state.map = [];
@@ -122,10 +123,12 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
         document.getElementById("cancel").style.display = "none";
         document.getElementById("overlay").style.display = "none";
         
+        // TODO: get ready to start game?
+        
     } else if (type === "gameState") {
         this.updateMap(content.board);
         this.state.players[content.idx].score = content.score;
-        this.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore, new Date(), 0);
+        this.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore);
         this.state.status[content.idx].scoreEl.textContent = this.state.players[content.idx].score;
        
     } else if (type === "endMatch") {
@@ -194,40 +197,83 @@ Minesweeper.prototype.endMatch = function() {
     this.state.endMatch = true;
 };
 
-Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore, time, k) {
+Minesweeper.prototype.animateDeltaScoreLoop = function () {
+    if (this.state.endMatch) {
+        return;
+    }
+    this.state.animateDeltaScoreLoopRunning = true;
+    this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
+    this.scoreCanvasContext.save();
+    this.scoreCanvasContext.font = 'bold 20px "Fira Mono"';
+    
+    var queue = this.state.animateDeltaScoreQueue, newQueue = [];
+    while (queue.length > 0) {
+        var head = queue.shift(),
+            i = head.i,
+            j = head.j,
+            k = head.k,
+            x = (j + .3) * this.config.tile.size,
+            y = (i + .4) * this.config.tile.size + Math.floor(k / 2),
+            str = head.str,
+            playerIdx = head.playerIdx;
+        this.scoreCanvasContext.fillStyle = this.getColorFromPlayer(playerIdx);
+        this.scoreCanvasContext.fillText(str, x, y);
+        
+        if (k > 1) {
+            newQueue.push({
+                i: head.i,
+                j: head.j,
+                k: head.k - 1,
+                str: head.str,
+                playerIdx: head.playerIdx
+            });
+        }
+    }
+    
+    while (newQueue.length > 0) {
+        var head = newQueue.shift();
+        this.state.animateDeltaScoreQueue.push({
+            i: head.i,
+            j: head.j,
+            k: head.k,
+            str: head.str,
+            playerIdx: head.playerIdx
+        });
+    }
+    
+    this.scoreCanvasContext.restore();
+    
+    if (this.state.animateDeltaScoreQueue.length > 0) {
+        window.requestAnimationFrame(this.animateDeltaScoreLoop.bind(this));
+    } else {
+        this.state.animateDeltaScoreLoopRunning = false;
+        this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
+    }
+    
+}
+
+Minesweeper.prototype.animateDeltaScore = function (playerIdx, i, j, deltaScore) {
     if (this.state.endMatch) {
         return;
     }
     if (deltaScore < 0 && playerIdx !== this.state.currentIdx) {
         return;
     }
-    if (this.state.animateDeltaScoreTime > time) { // an event that is more recent occurs
-        console.log("discarded:", this.state.animateDeltaScoreTime, time);
-        return; // discard this old event
-    }
-    this.state.animateDeltaScoreTime = time;
-    
-    this.scoreCanvasContext.clearRect(0, 0, this.scoreCanvas.width, this.scoreCanvas.height);
-    if (k > 20 || deltaScore === 0) {
+    if (deltaScore === 0) {
         return;
     }
     
-    var x = (j + .3) * this.config.tile.size,
-        y = (i + .4) * this.config.tile.size - Math.floor(k / 2),
-        str = deltaScore;
-    if (deltaScore > 0) {
-        str = "+" + deltaScore;
+    this.state.animateDeltaScoreQueue.push({
+        i: i,
+        j: j,
+        k: 20,
+        str: (deltaScore > 0) ? "+" + deltaScore : deltaScore,
+        playerIdx: playerIdx
+    });
+    if (!this.state.animateDeltaScoreLoopRunning) {
+        this.animateDeltaScoreLoop();
     }
     
-    this.scoreCanvasContext.save();
-    this.scoreCanvasContext.font = 'bold 20px "Fira Mono"';
-    this.scoreCanvasContext.fillStyle = this.getColorFromPlayer(playerIdx);
-    this.scoreCanvasContext.fillText(str, x, y);
-    this.scoreCanvasContext.restore();
-    
-    window.requestAnimationFrame(function () {
-        this.animateDeltaScore(playerIdx, i, j, deltaScore, time, k + 1);
-    }.bind(this));
 };
 
 Minesweeper.prototype.getColorFromNumber = function (number) {
