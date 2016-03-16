@@ -22,14 +22,21 @@ module.exports = (function () {
 		}
 	}
 
+	function has(player) {
+		return queue.indexOf(player) > -1;
+	}
+
 	function get(numPlayers) {
-		return queue.splice(0, numPlayers);
+		var result = queue.splice(0, numPlayers);
+		console.log('dequeueing %d players, there are %d players left in the queue.', numPlayers, queue.length);
+		return result;
 	}
 
 	return {
 		insert: insert,
 		erase: erase,
 		size: size,
-		get: get
+		get: get,
+		has: has
 	}
 }());

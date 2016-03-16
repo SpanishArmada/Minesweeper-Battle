@@ -41,7 +41,10 @@ wss.on('connection', function (ws) {
 
 			case MessageType.CANCEL_MATCH:
 			{
-				MatchmakingQueue.erase(player);
+				if(MatchmakingQueue.has(player)) {
+					MatchmakingQueue.erase(player);
+					checkQueue(); // This line of code is important
+				}
 			}
 			break;
 
@@ -113,7 +116,10 @@ wss.on('connection', function (ws) {
 
 	ws.on('close', function (code, data) {
 		// Important!
-		MatchmakingQueue.erase(player);
+		if(MatchmakingQueue.has(player)) {
+			MatchmakingQueue.erase(player);
+			checkQueue(); // always recheck the queue
+		}
 
 		// Do anything with (code, data)
 
@@ -133,7 +139,7 @@ var checkQueue = function () {
 
 	var size = MatchmakingQueue.size();
 	if(2 <= size && size < 4) {
-		console.log('Waiting for additional player for 10s (currently, %d players are in the queue)', size);
+		console.log('Waiting for an additional player for 10s (currently, %d players are in the queue)', size);
 		timerId = setTimeout(dequeue.bind(undefined, size), 10000);
 	}
 }
