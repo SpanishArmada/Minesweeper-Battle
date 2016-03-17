@@ -41,6 +41,7 @@ var Minesweeper = function(ws) {
             i: 0,
             j: 0
         },
+        startMatch: false,
         endMatch: false,
         status: [],
         animateDeltaScoreLoopRunning: false,
@@ -65,6 +66,25 @@ var Minesweeper = function(ws) {
     this.canvasContext = this.canvas.getContext('2d');
     this.scoreCanvasContext = this.scoreCanvas.getContext('2d');
     
+    this.colorLuminance = function (hex, lum) {
+
+        // validate hex string
+        hex = String(hex).replace(/[^0-9a-f]/gi, '');
+        if (hex.length < 6) {
+            hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+        }
+        lum = lum || 0;
+
+        // convert to decimal and change luminosity
+        var rgb = "#", c, i;
+        for (i = 0; i < 3; i++) {
+            c = parseInt(hex.substr(i*2,2), 16);
+            c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+            rgb += ("00"+c).substr(c.length);
+        }
+
+        return rgb;
+    }
 };
 Minesweeper.prototype.wsSend = function(type, data) {
     var msg = {type: type};
@@ -119,11 +139,19 @@ Minesweeper.prototype.wsMessageHandler = function(event) {
         }
         this.state.currentIdx = content.idx;
         
-        document.getElementById("message").textContent = "";
+        document.getElementById("message").textContent = "Game is starting in 3...";
         document.getElementById("cancel").style.display = "none";
-        document.getElementById("overlay").style.display = "none";
+        this.state.startMatch = true;
         
-        // TODO: get ready to start game?
+        setTimeout(function () {
+            document.getElementById("message").textContent = "Game is starting in 2..";
+            setTimeout(function () {
+                document.getElementById("message").textContent = "Game is starting in 1.";
+                setTimeout(function () {
+                    document.getElementById("overlay").style.display = "none";
+                }.bind(this), 1000);
+            }.bind(this), 1000);
+        }.bind(this), 1000);
         
     } else if (type === "gameState") {
         this.updateMap(content.board);
@@ -212,11 +240,11 @@ Minesweeper.prototype.animateDeltaScoreLoop = function () {
             i = head.i,
             j = head.j,
             k = head.k,
-            x = (j + .3) * this.config.tile.size,
-            y = (i + .4) * this.config.tile.size + Math.floor(k / 2),
+            x = (j + .35) * this.config.tile.size,
+            y = (i + .35) * this.config.tile.size + Math.floor(k / 2),
             str = head.str,
             playerIdx = head.playerIdx;
-        this.scoreCanvasContext.fillStyle = this.getColorFromPlayer(playerIdx);
+        this.scoreCanvasContext.fillStyle = this.colorLuminance(this.getColorFromPlayer(playerIdx), -0.3);
         this.scoreCanvasContext.fillText(str, x, y);
         
         if (k > 1) {
@@ -429,6 +457,7 @@ Minesweeper.prototype.handleRightClick = function (e) {
 
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("start").setAttribute("disabled", "disabled");
+    document.getElementById("start").textContent = "Connecting to server ...";
     var ws = new WebSocket("wss://spanisharmada-pciang.rhcloud.com:8443/");
     var minesweeper = null;
     ws.onopen = function (e) {
@@ -436,6 +465,7 @@ document.addEventListener("DOMContentLoaded", function () {
         minesweeper.drawMap();
         console.log("Connection opened");
         document.getElementById("start").removeAttribute("disabled");
+        document.getElementById("start").textContent = "Start";
     };
     window.onbeforeunload = function() {
         // http://stackoverflow.com/questions/4812686/closing-websocket-correctly-html5-javascript
@@ -446,6 +476,9 @@ document.addEventListener("DOMContentLoaded", function () {
     var afm = 0, afmGo = false, afmDots = 0;
     
     function animateFindingMatch() {
+        if (minesweeper.state.startMatch) {
+            return;
+        }
         afm++;
         if (afm % 40 === 0) {
             afmDots += 1;

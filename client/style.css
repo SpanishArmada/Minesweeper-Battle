@@ -45,7 +45,7 @@ button {
     padding: 15px 30px;
     font-size: 20px;
     cursor: pointer;
-    width: 150px;
+    min-width: 150px;
 }
 button:hover {
     background: #aaa;
@@ -53,8 +53,9 @@ button:hover {
 }
 #start {
     position: absolute;
-    top: calc(50% - 31px);
-    left: calc(50% - 75px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 6;
 }
 #cancel {
