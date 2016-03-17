@@ -174,7 +174,7 @@ Minesweeper.prototype.start = function(username) {
 };
 Minesweeper.prototype.cancel = function() {
     this.state.currentUsername = null;
-    this.wsSend("cancelFindMatch");
+    this.wsSend("cancelMatch");
 };
 Minesweeper.prototype.getColorFromPlayer = function (idx) {
     var color = ['#F40000', '#0050FF', '#EDDF00', '#00BF04'];
