@@ -1,8 +1,99 @@
 "use strict";
-
-var Minesweeper = function(ws) {
-    this.ws = ws;
+var MinesweeperWs = function(minesweeper) {
+    this.ws = new WebSocket("wss://spanisharmada-pciang.rhcloud.com:8443/");
+    this.minesweeper = minesweeper;
+    this.ws.onopen = this.wsOpenHandler.bind(this);
+    this.ws.onmessage = this.wsMessageHandler.bind(this);
+    window.onbeforeunload = function() {
+        // http://stackoverflow.com/a/4818541/917957
+        this.ws.onclose = function () {}; // disable onclose handler first
+        this.ws.close();
+    }.bind(this);
+};
+MinesweeperWs.prototype.wsSend = function(type, data) {
+    var msg = {type: type};
+    if (data != null) {
+        msg.content = data;
+    }
+    this.ws.send(JSON.stringify(msg));
+};
+MinesweeperWs.prototype.wsOpenHandler = function(event) {
+    console.log("Connection opened");
+    document.getElementById("start").removeAttribute("disabled");
+    document.getElementById("start").textContent = "Start";
+};
+MinesweeperWs.prototype.wsMessageHandler = function(event) {
+    var data = JSON.parse(event.data),
+        type = data.type,
+        content = data.content;
+    // console.log(data);
     
+    if (type === "matchFound") {
+        this.minesweeper.updateMap(content.board);
+        for (var i = 0; i < content.players.length; i++) {
+            this.minesweeper.state.players.push({
+                name: content.players[i].name,
+                score: 0
+            });
+            var scoreItem = document.createElement("div");
+            
+            
+            var nameEl = document.createElement("div");
+            var flagEl = this.minesweeper.config.flag[i % this.minesweeper.config.flag.length];
+            flagEl.width = 17; flagEl.height = 17;
+            
+            var nameTextEl = document.createElement("span");
+            nameTextEl.textContent = "(" + content.players[i].name + ")";
+            
+            if (content.idx === i) {
+                flagEl.style.backgroundColor = "#ccc";
+                nameTextEl.style.backgroundColor = "#ccc";
+            }
+            
+            nameEl.appendChild(flagEl);
+            nameEl.appendChild(nameTextEl);
+            
+            var scoreEl = document.createElement("div");
+            scoreEl.textContent = 0;
+            
+            
+            scoreItem.appendChild(nameEl);
+            scoreItem.appendChild(scoreEl);
+            document.getElementById("score-items").appendChild(scoreItem);
+            
+            this.minesweeper.state.status.push({
+                nameEl: nameEl,
+                scoreEl: scoreEl,
+            });
+        }
+        this.minesweeper.state.currentIdx = content.idx;
+        
+        document.getElementById("message").textContent = "Game is starting in 3...";
+        document.getElementById("cancel").style.display = "none";
+        this.minesweeper.state.startMatch = true;
+        
+        setTimeout(function () {
+            document.getElementById("message").textContent = "Game is starting in 2..";
+            setTimeout(function () {
+                document.getElementById("message").textContent = "Game is starting in 1.";
+                setTimeout(function () {
+                    document.getElementById("overlay").style.display = "none";
+                }.bind(this), 1000);
+            }.bind(this), 1000);
+        }.bind(this), 1000);
+        
+    } else if (type === "gameState") {
+        this.minesweeper.updateMap(content.board);
+        this.minesweeper.state.players[content.idx].score = content.score;
+        this.minesweeper.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore);
+        this.minesweeper.state.status[content.idx].scoreEl.textContent = this.minesweeper.state.players[content.idx].score;
+       
+    } else if (type === "endMatch") {
+        this.minesweeper.updateMap(content.board);
+        this.minesweeper.endMatch();
+    }
+};
+var Minesweeper = function() {
     this.config = {
         maze: {
             width: 16,
@@ -17,8 +108,11 @@ var Minesweeper = function(ws) {
             hover: null
         }, 
         flag: [],
-        bomb: null
+        bomb: null,
+        online: true
     };
+    
+    // init tile configs
     for (var i = 0; i < 4; i++) {
         var img = new Image(this.config.tile.size, this.config.tile.size);
         img.src = 'assets/flag-' + i + ".png";
@@ -31,7 +125,9 @@ var Minesweeper = function(ws) {
     img = new Image(this.config.tile.size, this.config.tile.size);
     img.src = 'assets/hover.png';
     this.config.tile.hover = img;
-        
+    
+    this.multiplayer = new MinesweeperWs(this);
+
     this.state = {
         map: [],
         currentUsername: null,
@@ -86,95 +182,23 @@ var Minesweeper = function(ws) {
         return rgb;
     }
 };
-Minesweeper.prototype.wsSend = function(type, data) {
-    var msg = {type: type};
-    if (data != null) {
-        msg.content = data;
-    }
-    this.ws.send(JSON.stringify(msg));
-};
-Minesweeper.prototype.wsMessageHandler = function(event) {
-    var data = JSON.parse(event.data),
-        type = data.type,
-        content = data.content;
-    console.log(data);
-    
-    if (type === "matchFound") {
-        this.updateMap(content.board);
-        for (var i = 0; i < content.players.length; i++) {
-            this.state.players.push({
-                name: content.players[i].name,
-                score: 0
-            });
-            var scoreItem = document.createElement("div");
-            
-            
-            var nameEl = document.createElement("div");
-            var flagEl = this.config.flag[i % this.config.flag.length];
-            flagEl.width = 17; flagEl.height = 17;
-            
-            var nameTextEl = document.createElement("span");
-            nameTextEl.textContent = "(" + content.players[i].name + ")";
-            
-            if (content.idx === i) {
-                flagEl.style.backgroundColor = "#ccc";
-                nameTextEl.style.backgroundColor = "#ccc";
-            }
-            
-            nameEl.appendChild(flagEl);
-            nameEl.appendChild(nameTextEl);
-            
-            var scoreEl = document.createElement("div");
-            scoreEl.textContent = 0;
-            
-            
-            scoreItem.appendChild(nameEl);
-            scoreItem.appendChild(scoreEl);
-            document.getElementById("score-items").appendChild(scoreItem);
-            
-            this.state.status.push({
-                nameEl: nameEl,
-                scoreEl: scoreEl,
-            });
-        }
-        this.state.currentIdx = content.idx;
-        
-        document.getElementById("message").textContent = "Game is starting in 3...";
-        document.getElementById("cancel").style.display = "none";
-        this.state.startMatch = true;
-        
-        setTimeout(function () {
-            document.getElementById("message").textContent = "Game is starting in 2..";
-            setTimeout(function () {
-                document.getElementById("message").textContent = "Game is starting in 1.";
-                setTimeout(function () {
-                    document.getElementById("overlay").style.display = "none";
-                }.bind(this), 1000);
-            }.bind(this), 1000);
-        }.bind(this), 1000);
-        
-    } else if (type === "gameState") {
-        this.updateMap(content.board);
-        this.state.players[content.idx].score = content.score;
-        this.animateDeltaScore(content.idx, content.i, content.j, content.deltaScore);
-        this.state.status[content.idx].scoreEl.textContent = this.state.players[content.idx].score;
-       
-    } else if (type === "endMatch") {
-        this.updateMap(content.board);
-        this.endMatch();
-    }
-};
+
 
 Minesweeper.prototype.start = function(username) {
     this.state.currentUsername = username;
-    this.wsSend("findMatch", {
-        name: username 
-    });
-    this.ws.onmessage =  this.wsMessageHandler.bind(this);
+    if (this.config.online) {
+        this.multiplayer.wsSend("findMatch", {
+            name: username 
+        });
+    }
+    
 };
 Minesweeper.prototype.cancel = function() {
     this.state.currentUsername = null;
-    this.wsSend("cancelMatch");
+    if (this.config.online) {
+        this.multiplayer.wsSend("cancelMatch");
+    }
+    
 };
 Minesweeper.prototype.getColorFromPlayer = function (idx) {
     var color = ['#F40000', '#0050FF', '#EDDF00', '#00BF04'];
@@ -431,10 +455,13 @@ Minesweeper.prototype.handleClick = function (e) {
     }
     
     // send (i, j) to server
-    this.wsSend("clickReveal", {
-        i: i,
-        j: j
-    });
+    if (this.config.online) {
+        this.multiplayer.wsSend("clickReveal", {
+            i: i,
+            j: j
+        });
+    }
+    
 };
 
 Minesweeper.prototype.handleRightClick = function (e) {
@@ -447,10 +474,12 @@ Minesweeper.prototype.handleRightClick = function (e) {
     }
     
     // send (i, j) to server
-    this.wsSend("clickFlag", {
-        i: i,
-        j: j
-    });
+    if (this.config.online) {
+        this.multiplayer.wsSend("clickFlag", {
+            i: i,
+            j: j
+        });
+    }
     
 };
 
@@ -458,38 +487,20 @@ Minesweeper.prototype.handleRightClick = function (e) {
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("start").setAttribute("disabled", "disabled");
     document.getElementById("start").textContent = "Connecting to server ...";
-    var ws = new WebSocket("wss://spanisharmada-pciang.rhcloud.com:8443/");
-    var minesweeper = null;
-    ws.onopen = function (e) {
-        minesweeper = new Minesweeper(ws);
-        minesweeper.drawMap();
-        console.log("Connection opened");
-        document.getElementById("start").removeAttribute("disabled");
-        document.getElementById("start").textContent = "Start";
-    };
-    window.onbeforeunload = function() {
-        // http://stackoverflow.com/questions/4812686/closing-websocket-correctly-html5-javascript
-        ws.onclose = function () {}; // disable onclose handler first
-        ws.close();
-    };
-    
-    var afm = 0, afmGo = false, afmDots = 0;
-    
+    var minesweeper = new Minesweeper();
+    minesweeper.drawMap();
+    var afm = 0, afmGo = false, dots = "";
     function animateFindingMatch() {
         if (minesweeper.state.startMatch) {
             return;
         }
         afm++;
         if (afm % 40 === 0) {
-            afmDots += 1;
             afm = 0;
-        }
-        if (afmDots > 5) {
-            afmDots = 0;
-        }
-        var dots = "";
-        for (var i = 0; i < afmDots; i++) {
             dots += ".";
+        }
+        if (dots.length > 5) {
+            dots = "";
         }
         document.getElementById("message").textContent = "Finding match" + dots;
         
