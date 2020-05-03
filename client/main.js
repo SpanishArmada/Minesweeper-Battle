@@ -1,6 +1,6 @@
 "use strict";
 var MinesweeperWs = function(minesweeper) {
-    this.ws = new WebSocket("wss://spanisharmada-pciang.rhcloud.com:8443/");
+    this.ws = new WebSocket("ws://localhost:3000/");
     this.minesweeper = minesweeper;
     this.ws.onopen = this.wsOpenHandler.bind(this);
     this.ws.onmessage = this.wsMessageHandler.bind(this);

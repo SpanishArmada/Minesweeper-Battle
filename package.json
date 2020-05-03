@@ -1,0 +1,14 @@
+{
+  "name": "minesweeper-battle",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "version": "1.0.0",
+  "description": "multiplayer minesweeper",
+  "main": "index.js",
+  "author": "pciang, kenrick95, cacad101, dbakti7",
+  "license": "ISC",
+  "repository": "git@github.com:SpanishArmada/Minesweeper-Battle.git"
+}

@@ -17,16 +17,22 @@ Two-to-four-player real-time minesweeper battle on the same minefield, competing
 2. Winner is determined by highest score. Draw is declared in case of tie.
 
 ## Running the programs
-### Client
 
-1. At "client" folder, open `index.html` at any modern browser (alternatively, access it at  [Rawgit](http://rawgit.com/pciang/SpanishArmada/master/client/index.html))
-2. **Important**: Wait for another player to start find match. You can try to simulate two users at one on one machine by opening the same page in a new tab.
+### Client and server
 
-
-### Server
-
-1. At "server" folder, `npm install` (to install dependencies)
-2. To run, `node index.js`
+1. Install dependencies:
+   ```
+   yarn start
+   ```
+2. Start server
+   ```
+   yarn workspace server start
+   ```
+3. Start client
+   ```
+   yarn workspace client start
+   ```
+4. Open browser at `http://localhost:8080`
 
 ### Client-AI
 

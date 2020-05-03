@@ -1,15 +1,15 @@
 {
-  "name": "server",
+  "name": "client",
   "private": true,
   "version": "1.0.0",
   "description": "multiplayer minesweeper",
-  "main": "index.js",
+  "main": "index.html",
   "author": "pciang, kenrick95, cacad101, dbakti7",
   "license": "ISC",
   "scripts": {
-    "start": "node index.js"
+    "start": "hs"
   },
-  "dependencies": {
-    "ws": "^1.0.1"
+  "devDependencies": {
+    "http-server": "^0.12.3"
   }
 }
