@@ -1,37 +1,40 @@
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Spanish Armada - Minesweeper Battle!</title>
-        <link href='https://fonts.googleapis.com/css?family=Fira+Mono:400,700' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="style.css" />
-    </head>
-    <body>
-        <main>
-            <h1>Minesweeper Battle</h1>
-            <div id="status">
-                <div id="scores">
-                    <div class="table-first-col">Players:<br>Scores: </div>
-                    <div class="table-col">
-                        <div class="flex" id="score-items">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="overlay">
-                <div id="prompt">
-                    <label for="username-input">
-                        What should we call you?
-                    </label>
-                    <br/>
-                    <input type="text" id="username-input" required="required">
-                </div>
-                <div id="message"></div>
-                <button id="start">Start</button>
-                <button id="cancel">Cancel</button>
-            </div>
-            <canvas id="canvas-score" width="512" height="512"></canvas>
-            <canvas id="canvas" width="512" height="512"></canvas>
-        </main>
-        <script src="main.js"></script>
-    </body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Spanish Armada - Minesweeper Battle!</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Minesweeper Battle</h1>
+      <div id="status">
+        <div id="scores">
+          <div class="table-first-col">Players:<br />Scores:</div>
+          <div class="table-col">
+            <div class="flex" id="score-items"></div>
+          </div>
+        </div>
+      </div>
+      <div id="overlay">
+        <div id="prompt">
+          <label for="username-input">
+            What should we call you?
+          </label>
+          <br />
+          <input type="text" id="username-input" required="required" />
+        </div>
+        <div id="message"></div>
+        <button id="start">Start</button>
+        <button id="cancel">Cancel</button>
+      </div>
+      <canvas id="canvas-score" width="512" height="512"></canvas>
+      <canvas id="canvas" width="512" height="512"></canvas>
+    </main>
+    <script src="./src/main.js" type="module"></script>
+  </body>
 </html>
