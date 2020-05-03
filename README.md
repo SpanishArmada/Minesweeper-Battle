@@ -50,6 +50,7 @@ Two-to-four-player real-time minesweeper battle on the same minefield, competing
 5. Better matchmaking algorithm according to user skills.
 6. Possible additional game modes, e.g. no-flag mode.
 7. In-app purchase to obtain special flag design, etc.
+8. Rewrite Client-AI in Nodejs so it can be hosted together with client + server
 
 ## Demo
 [At YouTube](https://youtu.be/dSQmVNemUbw)
