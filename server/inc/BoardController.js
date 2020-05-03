@@ -1,3 +1,4 @@
+//@ts-check
 var GameState = require('./GameState.js');
 
 module.exports = (function () {

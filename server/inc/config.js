@@ -1,3 +1,4 @@
+//@ts-check
 module.exports = (function () {
   var port = 8080,
     protocol = 'ws',

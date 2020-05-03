@@ -1,8 +1,28 @@
-module.exports = function (ws) {
-  this.ws = ws;
-  this.name = null;
-  this.score = 0;
+//@ts-check
 
-  this.boardId = null;
-  this.idx = null;
-};
+class Player {
+  constructor(ws) {
+    /**
+     * @type WebSocket
+     */
+    this.ws = ws;
+    /**
+     * @type string
+     */
+    this.name = null;
+    /**
+     * @type number
+     */
+    this.score = 0;
+
+    /**
+     * @type number
+     */
+    this.boardId = null;
+    /**
+     * @type number
+     */
+    this.idx = null;
+  }
+}
+module.exports = Player;

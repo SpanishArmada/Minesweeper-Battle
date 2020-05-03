@@ -1,46 +1,62 @@
-var assert = require('assert');
+//@ts-check
 
-module.exports = (function () {
-  var queue = [];
+/**
+ * @typedef {import('./Player')} Player
+ */
+class MatchmakingQueue {
+  constructor() {
+    /**
+     * @type Array<Player>
+     */
+    this.queue = [];
+  }
 
-  function insert(player) {
-    if (queue.indexOf(player) === -1) {
-      queue.push(player);
-      console.log('%d players are queueing.', queue.length);
+  /**
+   * @param {Player} player 
+   */
+  insert(player) {
+    if (this.queue.indexOf(player) === -1) {
+      this.queue.push(player);
+      console.log('%d players are queueing.', this.queue.length);
     }
   }
 
-  function size() {
-    return queue.length;
+  size() {
+    return this.queue.length;
   }
 
-  function erase(player) {
-    var idx = queue.indexOf(player);
+  /**
+   * @param {Player} player 
+   */
+  erase(player) {
+    var idx = this.queue.indexOf(player);
     if (idx > -1) {
-      queue.splice(idx, 1);
-      console.log('%d players are queueing.', queue.length);
+      this.queue.splice(idx, 1);
+      console.log('%d players are queueing.', this.queue.length);
     }
   }
 
-  function has(player) {
-    return queue.indexOf(player) > -1;
+  /**
+   * @param {Player} player 
+   */
+  has(player) {
+    return this.queue.indexOf(player) > -1;
   }
 
-  function get(numPlayers) {
-    var result = queue.splice(0, numPlayers);
+  /**
+   * @param {number} numPlayers 
+   */
+  get(numPlayers) {
+    var result = this.queue.splice(0, numPlayers);
     console.log(
-      'dequeueing %d players, there are %d players left in the queue.',
+      'dequeueing %d players, there are %d players left in the this.queue.',
       numPlayers,
-      queue.length
+      this.queue.length
     );
     return result;
   }
+}
 
-  return {
-    insert: insert,
-    erase: erase,
-    size: size,
-    get: get,
-    has: has,
-  };
-})();
+module.exports = {
+  default: MatchmakingQueue,
+};

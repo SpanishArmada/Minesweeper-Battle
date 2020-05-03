@@ -1,5 +1,5 @@
-var GameConstant = require('./GameConstant.js'),
-  Scoring = require('./scoring.js');
+//@ts-check
+const Scoring = require('./scoring.js');
 
 var Constant = {
   UNREVEALED: -1,

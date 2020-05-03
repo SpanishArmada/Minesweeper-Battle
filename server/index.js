@@ -1,9 +1,10 @@
+//@ts-check
 const config = require('./inc/config.js');
 const WebSocket = require('ws');
 const MessageType = require('./inc/MessageType.js');
 const BoardGenerator = require('./inc/BoardGenerator.js');
 const GameConstant = require('./inc/GameConstant.js');
-const MatchmakingQueue = require('./inc/MatchmakingQueue.js');
+const MatchmakingQueue = require('./inc/MatchmakingQueue.js').default;
 const BoardController = require('./inc/BoardController.js');
 const Player = require('./inc/Player.js');
 
@@ -13,6 +14,8 @@ var wss = new WebSocket.Server({
   }),
   inGameData = 'inGameData',
   timerId = null;
+
+  const matchmakingQueue = new MatchmakingQueue();
 
 wss.on('connection', function (ws) {
   console.log('Number of clients: %d', wss.clients.length);
@@ -26,7 +29,7 @@ wss.on('connection', function (ws) {
       case MessageType.FIND_MATCH:
         {
           ws[inGameData].name = data.content.name;
-          MatchmakingQueue.insert(player);
+          matchmakingQueue.insert(player);
 
           checkQueue();
         }
@@ -34,8 +37,8 @@ wss.on('connection', function (ws) {
 
       case MessageType.CANCEL_MATCH:
         {
-          if (MatchmakingQueue.has(player)) {
-            MatchmakingQueue.erase(player);
+          if (matchmakingQueue.has(player)) {
+            matchmakingQueue.erase(player);
             checkQueue(); // This line of code is important
           }
         }
@@ -108,8 +111,8 @@ wss.on('connection', function (ws) {
 
   ws.on('close', function (code, data) {
     // Important!
-    if (MatchmakingQueue.has(player)) {
-      MatchmakingQueue.erase(player);
+    if (matchmakingQueue.has(player)) {
+      matchmakingQueue.erase(player);
       checkQueue(); // always recheck the queue
     }
 
@@ -125,11 +128,11 @@ var checkQueue = function () {
   // even if timerId is null
   clearTimeout(timerId);
 
-  while (MatchmakingQueue.size() >= 4) {
+  while (matchmakingQueue.size() >= 4) {
     dequeue(4);
   }
 
-  var size = MatchmakingQueue.size();
+  var size = matchmakingQueue.size();
   if (2 <= size && size < 4) {
     console.log(
       'Waiting for an additional player for 10s (currently, %d players are in the queue)',
@@ -140,7 +143,7 @@ var checkQueue = function () {
 };
 
 var dequeue = function (numPlayers) {
-  var players = MatchmakingQueue.get(numPlayers),
+  var players = matchmakingQueue.get(numPlayers),
     randomRevealedRow = (1 + Math.random() * (GameConstant.NUM_ROWS - 2)) | 0,
     randomRevealedCol = (1 + Math.random() * (GameConstant.NUM_COLS - 2)) | 0,
     gameState = BoardController.newGame(
