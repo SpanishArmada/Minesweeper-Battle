@@ -5,7 +5,7 @@ const MessageType = require('./inc/MessageType.js');
 const BoardGenerator = require('./inc/BoardGenerator.js');
 const GameConstant = require('./inc/GameConstant.js');
 const MatchmakingQueue = require('./inc/MatchmakingQueue.js').default;
-const BoardController = require('./inc/BoardController.js');
+const BoardController = require('./inc/BoardController.js').default;
 const Player = require('./inc/Player.js');
 
 var wss = new WebSocket.Server({
@@ -15,14 +15,18 @@ var wss = new WebSocket.Server({
   inGameData = 'inGameData',
   timerId = null;
 
-  const matchmakingQueue = new MatchmakingQueue();
+const matchmakingQueue = new MatchmakingQueue();
+const boardController = new BoardController();
 
 wss.on('connection', function (ws) {
-  console.log('Number of clients: %d', wss.clients.length);
+  console.log('Number of clients: %d', wss.clients.size);
 
   var player = (ws[inGameData] = new Player(ws));
 
   ws.on('message', function (msgStr) {
+    if (typeof msgStr !== 'string') {
+      return;
+    }
     var data = JSON.parse(msgStr);
 
     switch (data.type) {
@@ -46,8 +50,8 @@ wss.on('connection', function (ws) {
 
       case MessageType.CLICK_REVEAL:
         {
-          var gameState = BoardController.getBoard(player.boardId),
-            players = BoardController.getPlayers(player.boardId),
+          var gameState = boardController.getBoard(player.boardId),
+            players = boardController.getPlayers(player.boardId),
             i = data.content.i,
             j = data.content.j,
             updates = gameState.clickReveal(player, i, j),
@@ -64,7 +68,7 @@ wss.on('connection', function (ws) {
               },
             };
 
-          for (var i = 0; i < players.length; ++i) {
+          for (let i = 0; i < players.length; ++i) {
             players[i].ws.send(JSON.stringify(result), function (err) {
               /* Do nothing */
             });
@@ -76,8 +80,8 @@ wss.on('connection', function (ws) {
 
       case MessageType.CLICK_FLAG:
         {
-          var gameState = BoardController.getBoard(player.boardId),
-            players = BoardController.getPlayers(player.boardId),
+          var gameState = boardController.getBoard(player.boardId),
+            players = boardController.getPlayers(player.boardId),
             i = data.content.i,
             j = data.content.j,
             updates = gameState.clickFlag(player, i, j),
@@ -94,7 +98,7 @@ wss.on('connection', function (ws) {
               },
             };
 
-          for (var i = 0; i < players.length; ++i) {
+          for (let i = 0; i < players.length; ++i) {
             players[i].ws.send(JSON.stringify(result), function (err) {
               /* Do nothing */
             });
@@ -119,7 +123,7 @@ wss.on('connection', function (ws) {
     // Do anything with (code, data)
 
     // Remove player from board
-    BoardController.dc(player);
+    boardController.disconnect(player);
   });
 });
 
@@ -146,21 +150,21 @@ var dequeue = function (numPlayers) {
   var players = matchmakingQueue.get(numPlayers),
     randomRevealedRow = (1 + Math.random() * (GameConstant.NUM_ROWS - 2)) | 0,
     randomRevealedCol = (1 + Math.random() * (GameConstant.NUM_COLS - 2)) | 0,
-    gameState = BoardController.newGame(
+    gameState = boardController.newGame({
       players,
-      BoardGenerator.generate(
+      board: BoardGenerator.generate(
         GameConstant.NUM_ROWS,
         GameConstant.NUM_COLS,
         randomRevealedRow,
         randomRevealedCol,
         GameConstant.NUM_MINES
       ),
-      GameConstant.NUM_ROWS,
-      GameConstant.NUM_COLS,
-      GameConstant.NUM_MINES,
-      randomRevealedRow,
-      randomRevealedCol
-    ),
+      numRows: GameConstant.NUM_ROWS,
+      numCols: GameConstant.NUM_COLS,
+      numMines: GameConstant.NUM_MINES,
+      revealedRow: randomRevealedRow,
+      revealedCol: randomRevealedCol,
+    }),
     // Data to be sent to client
     data = {
       type: MessageType.MATCH_FOUND,
@@ -185,7 +189,7 @@ var dequeue = function (numPlayers) {
 };
 
 var checkMatchEnd = function (players, gameState) {
-  if (gameState.numMines() > 0) return;
+  if (gameState.numMines > 0) return;
 
   for (var i = 0; i < players.length; ++i) {
     players[i].ws.send(
@@ -203,5 +207,5 @@ var checkMatchEnd = function (players, gameState) {
     players[i].ws.close();
   }
 
-  BoardController.clear(players[0].boardId);
+  boardController.clear(players[0].boardId);
 };

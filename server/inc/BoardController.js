@@ -1,77 +1,71 @@
 //@ts-check
-var GameState = require('./GameState.js');
+var GameState = require('./GameState.js').default;
 
-module.exports = (function () {
-  var nextBoardId = 0,
-    board = {},
-    players = {};
-
-  function newGame(
-    playerArr,
-    generatedBoard,
+class BoardController {
+  constructor() {
+    this.nextBoardId = 0;
+    this.board = {};
+    this.players = {};
+  }
+  newGame({
+    players,
+    board,
     numRows,
     numCols,
     numMines,
-    randomRevealedRow,
-    randomRevealedCol
-  ) {
-    var boardId = nextBoardId.toString();
-    for (var i = 0; i < playerArr.length; ++i) {
-      playerArr[i].boardId = boardId;
-      playerArr[i].idx = i;
+    revealedRow,
+    revealedCol,
+  }) {
+    var boardId = this.nextBoardId.toString();
+    for (var i = 0; i < players.length; ++i) {
+      players[i].boardId = boardId;
+      players[i].idx = i;
     }
 
-    players[boardId] = playerArr;
-    board[boardId] = new GameState(
-      playerArr,
-      generatedBoard,
+    this.players[boardId] = players;
+    this.board[boardId] = new GameState({
+      players,
+      board,
       numRows,
       numCols,
       numMines,
-      randomRevealedRow,
-      randomRevealedCol
-    );
-    ++nextBoardId;
+      revealedRow,
+      revealedCol,
+    });
+    ++this.nextBoardId;
 
-    return board[boardId];
+    return this.board[boardId];
   }
 
-  function getBoard(boardId) {
-    return board[boardId];
+  getBoard(boardId) {
+    return this.board[boardId];
   }
-
-  function getPlayers(boardId) {
-    return players[boardId];
+  getPlayers(boardId) {
+    return this.players[boardId];
   }
-
-  function clear(boardId) {
+  clear(boardId) {
     console.log('Deleting board ID: ', boardId);
-    delete players[boardId];
-    delete board[boardId];
+    delete this.players[boardId];
+    delete this.board[boardId];
   }
-
-  function dc(player) {
+  disconnect(player) {
     var boardId = player.boardId;
     if (
       boardId === null ||
       // Board has not been deleted
-      typeof board[boardId] === 'undefined'
+      typeof this.board[boardId] === 'undefined'
     ) {
       return;
     }
 
-    board[boardId].dc();
+    this.board[boardId].disconnect();
 
-    if (board[boardId].getNumPlayersOnline() === 0) {
-      clear(boardId);
+    if (this.board[boardId].getNumPlayersOnline() === 0) {
+      this.clear(boardId);
     }
   }
+}
 
-  return {
-    newGame: newGame,
-    getBoard: getBoard,
-    getPlayers: getPlayers,
-    clear: clear,
-    dc: dc,
-  };
-})();
+module.exports = {
+  default: BoardController,
+};
