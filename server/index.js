@@ -8,12 +8,12 @@ const MatchmakingQueue = require('./inc/MatchmakingQueue.js').default;
 const BoardController = require('./inc/BoardController.js').default;
 const Player = require('./inc/Player.js');
 
-var wss = new WebSocket.Server({
-    host: config.hostname(process.env.OPENSHIFT_NODEJS_IP || 'localhost'),
-    port: config.port(process.env.OPENSHIFT_NODEJS_PORT || 3000),
-  }),
-  inGameData = 'inGameData',
-  timerId = null;
+let wss = new WebSocket.Server({
+  host: config.hostname(process.env.OPENSHIFT_NODEJS_IP || 'localhost'),
+  port: config.port(process.env.OPENSHIFT_NODEJS_PORT || 3000),
+});
+let inGameData = 'inGameData';
+let timerId = null;
 
 const matchmakingQueue = new MatchmakingQueue();
 const boardController = new BoardController();
@@ -21,13 +21,13 @@ const boardController = new BoardController();
 wss.on('connection', function (ws) {
   console.log('Number of clients: %d', wss.clients.size);
 
-  var player = (ws[inGameData] = new Player(ws));
+  let player = (ws[inGameData] = new Player(ws));
 
   ws.on('message', function (msgStr) {
     if (typeof msgStr !== 'string') {
       return;
     }
-    var data = JSON.parse(msgStr);
+    let data = JSON.parse(msgStr);
 
     switch (data.type) {
       case MessageType.FIND_MATCH:
@@ -50,28 +50,28 @@ wss.on('connection', function (ws) {
 
       case MessageType.CLICK_REVEAL:
         {
-          var gameState = boardController.getBoard(player.boardId),
-            players = boardController.getPlayers(player.boardId),
-            i = data.content.i,
-            j = data.content.j,
-            updates = gameState.clickReveal(player, i, j),
-            idx = players.indexOf(player),
-            result = {
-              type: MessageType.GAME_STATE,
-              content: {
-                i: i,
-                j: j,
-                idx: player.idx,
-                board: updates.gameBoard,
-                deltaScore: updates.deltaScore,
-                score: player.score,
-              },
-            };
+          let gameState = boardController.getBoard(player.boardId);
+          let players = boardController.getPlayers(player.boardId);
+          if (!gameState || !players) {
+            break;
+          }
+          let i = data.content.i;
+          let j = data.content.j;
+          let updates = gameState.clickReveal(player, i, j);
+          let result = {
+            type: MessageType.GAME_STATE,
+            content: {
+              i: i,
+              j: j,
+              idx: player.idx,
+              board: updates.gameBoard,
+              deltaScore: updates.deltaScore,
+              score: player.score,
+            },
+          };
 
           for (let i = 0; i < players.length; ++i) {
-            players[i].ws.send(JSON.stringify(result), function (err) {
-              /* Do nothing */
-            });
+            players[i].ws.send(JSON.stringify(result));
           }
 
           checkMatchEnd(players, gameState);
@@ -80,28 +80,28 @@ wss.on('connection', function (ws) {
 
       case MessageType.CLICK_FLAG:
         {
-          var gameState = boardController.getBoard(player.boardId),
-            players = boardController.getPlayers(player.boardId),
-            i = data.content.i,
-            j = data.content.j,
-            updates = gameState.clickFlag(player, i, j),
-            idx = players.indexOf(player),
-            result = {
-              type: MessageType.GAME_STATE,
-              content: {
-                i: i,
-                j: j,
-                idx: player.idx,
-                board: updates.gameBoard,
-                deltaScore: updates.deltaScore,
-                score: player.score,
-              },
-            };
+          let gameState = boardController.getBoard(player.boardId);
+          let players = boardController.getPlayers(player.boardId);
+          if (!gameState || !players) {
+            break;
+          }
+          let i = data.content.i;
+          let j = data.content.j;
+          let updates = gameState.clickFlag(player, i, j);
+          let result = {
+            type: MessageType.GAME_STATE,
+            content: {
+              i: i,
+              j: j,
+              idx: player.idx,
+              board: updates.gameBoard,
+              deltaScore: updates.deltaScore,
+              score: player.score,
+            },
+          };
 
           for (let i = 0; i < players.length; ++i) {
-            players[i].ws.send(JSON.stringify(result), function (err) {
-              /* Do nothing */
-            });
+            players[i].ws.send(JSON.stringify(result));
           }
 
           checkMatchEnd(players, gameState);
@@ -127,7 +127,7 @@ wss.on('connection', function (ws) {
   });
 });
 
-var checkQueue = function () {
+function checkQueue() {
   // The next line of code does not throw error
   // even if timerId is null
   clearTimeout(timerId);
@@ -136,7 +136,7 @@ var checkQueue = function () {
     dequeue(4);
   }
 
-  var size = matchmakingQueue.size();
+  let size = matchmakingQueue.size();
   if (2 <= size && size < 4) {
     console.log(
       'Waiting for an additional player for 10s (currently, %d players are in the queue)',
@@ -146,35 +146,35 @@ var checkQueue = function () {
   }
 };
 
-var dequeue = function (numPlayers) {
-  var players = matchmakingQueue.get(numPlayers),
-    randomRevealedRow = (1 + Math.random() * (GameConstant.NUM_ROWS - 2)) | 0,
-    randomRevealedCol = (1 + Math.random() * (GameConstant.NUM_COLS - 2)) | 0,
-    gameState = boardController.newGame({
-      players,
-      board: BoardGenerator.generate(
-        GameConstant.NUM_ROWS,
-        GameConstant.NUM_COLS,
-        randomRevealedRow,
-        randomRevealedCol,
-        GameConstant.NUM_MINES
-      ),
-      numRows: GameConstant.NUM_ROWS,
-      numCols: GameConstant.NUM_COLS,
-      numMines: GameConstant.NUM_MINES,
-      revealedRow: randomRevealedRow,
-      revealedCol: randomRevealedCol,
-    }),
-    // Data to be sent to client
-    data = {
-      type: MessageType.MATCH_FOUND,
-      content: {
-        players: [],
-      },
-    };
+function dequeue(numPlayers) {
+  let players = matchmakingQueue.get(numPlayers);
+  let randomRevealedRow = (1 + Math.random() * (GameConstant.NUM_ROWS - 2)) | 0;
+  let randomRevealedCol = (1 + Math.random() * (GameConstant.NUM_COLS - 2)) | 0;
+  let gameState = boardController.newGame({
+    players,
+    board: BoardGenerator.generate(
+      GameConstant.NUM_ROWS,
+      GameConstant.NUM_COLS,
+      randomRevealedRow,
+      randomRevealedCol,
+      GameConstant.NUM_MINES
+    ),
+    numRows: GameConstant.NUM_ROWS,
+    numCols: GameConstant.NUM_COLS,
+    numMines: GameConstant.NUM_MINES,
+    revealedRow: randomRevealedRow,
+    revealedCol: randomRevealedCol,
+  });
+  // Data to be sent to client
+  let data = {
+    type: MessageType.MATCH_FOUND,
+    content: {
+      players: [],
+    },
+  };
 
   data.content.board = gameState.gameBoard;
-  for (var i = 0; i < players.length; ++i) {
+  for (let i = 0; i < players.length; ++i) {
     data.content.players.push({
       idx: i,
       name: players[i].name,
@@ -182,26 +182,23 @@ var dequeue = function (numPlayers) {
     });
   }
 
-  for (var i = 0; i < players.length; ++i) {
+  for (let i = 0; i < players.length; ++i) {
     data.content.idx = i;
     players[i].ws.send(JSON.stringify(data));
   }
 };
 
-var checkMatchEnd = function (players, gameState) {
+function checkMatchEnd(players, gameState) {
   if (gameState.numMines > 0) return;
 
-  for (var i = 0; i < players.length; ++i) {
+  for (let i = 0; i < players.length; ++i) {
     players[i].ws.send(
       JSON.stringify({
         type: MessageType.END_MATCH,
         content: {
           board: gameState.gameBoard,
         },
-      }),
-      function (err) {
-        /* Do nothing */
-      }
+      })
     );
 
     players[i].ws.close();

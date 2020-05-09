@@ -1,6 +1,13 @@
 //@ts-check
+/**
+ * @typedef {import('ws')} WebSocket
+ */
 
 class Player {
+  /**
+   *
+   * @param {WebSocket} ws
+   */
   constructor(ws) {
     /**
      * @type WebSocket
@@ -16,7 +23,7 @@ class Player {
     this.score = 0;
 
     /**
-     * @type number
+     * @type string
      */
     this.boardId = null;
     /**

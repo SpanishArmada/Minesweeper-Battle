@@ -1,8 +1,8 @@
 //@ts-check
 module.exports = (function () {
-  var port = 8080,
-    protocol = 'ws',
-    hostname = 'localhost';
+  let port = 8080;
+  let protocol = 'ws';
+  let hostname = 'localhost';
 
   return {
     port: function (arg) {

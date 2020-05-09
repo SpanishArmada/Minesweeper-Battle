@@ -84,8 +84,8 @@ class GameState {
   }
 
   revealAll() {
-    for (var r = 0; r < this.numRows; ++r) {
-      for (var c = 0; c < this.numCols; ++c) {
+    for (let r = 0; r < this.numRows; ++r) {
+      for (let c = 0; c < this.numCols; ++c) {
         if (this.gameBoard[r][c] === Constant.UNREVEALED) {
           this.reveal(r, c);
         }
@@ -176,8 +176,14 @@ class GameState {
     }
   }
 
+  /**
+   * 
+   * @param {Player} player 
+   * @param {number} i row 
+   * @param {number} j column 
+   */
   clickReveal(player, i, j) {
-    var deltaScore = this.reveal(i, j);
+    let deltaScore = this.reveal(i, j);
     player.score += deltaScore;
 
     if (this.numMines === 0) this.revealAll();
@@ -188,6 +194,12 @@ class GameState {
     };
   }
 
+  /**
+   * 
+   * @param {Player} player 
+   * @param {number} i row 
+   * @param {number} j column 
+   */
   flag(player, i, j) {
     if (this.gameBoard[i][j] !== Constant.UNREVEALED) {
       return 0;
@@ -203,8 +215,14 @@ class GameState {
     return Scoring.WRONG_FLAG_MULTIPLIER;
   }
 
+  /**
+   * 
+   * @param {Player} player 
+   * @param {number} i row 
+   * @param {number} j column 
+   */
   clickFlag(player, i, j) {
-    var deltaScore = this.flag(player, i, j);
+    let deltaScore = this.flag(player, i, j);
     player.score += deltaScore;
 
     if (this.numMines === 0) this.revealAll();

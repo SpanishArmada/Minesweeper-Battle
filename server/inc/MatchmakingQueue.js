@@ -29,7 +29,7 @@ class MatchmakingQueue {
    * @param {Player} player 
    */
   erase(player) {
-    var idx = this.queue.indexOf(player);
+    let idx = this.queue.indexOf(player);
     if (idx > -1) {
       this.queue.splice(idx, 1);
       console.log('%d players are queueing.', this.queue.length);
@@ -47,7 +47,7 @@ class MatchmakingQueue {
    * @param {number} numPlayers 
    */
   get(numPlayers) {
-    var result = this.queue.splice(0, numPlayers);
+    let result = this.queue.splice(0, numPlayers);
     console.log(
       'dequeueing %d players, there are %d players left in the this.queue.',
       numPlayers,

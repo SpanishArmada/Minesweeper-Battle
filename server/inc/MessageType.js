@@ -2,7 +2,7 @@
 /*
 Usage:
 
-var MessageType = require('./inc/MessageType.js');
+const MessageType = require('./inc/MessageType.js');
 
 ...
 

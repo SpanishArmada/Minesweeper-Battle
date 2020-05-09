@@ -3,15 +3,35 @@
  * Created by dbakti7 on 3/12/2016.
  */
 
-module.exports = (function () {
-  var dr = [0, 1, 1, 1, 0, -1, -1, -1],
-    dc = [1, 1, 0, -1, -1, -1, 0, 1];
+let dr = [0, 1, 1, 1, 0, -1, -1, -1],
+  dc = [1, 1, 0, -1, -1, -1, 0, 1];
+class BoardGenerator {
+  /**
+   *
+   * @param {Object} options
+   * @param {number} options.numRows  (numRows, numCols) is the board size
+   * @param {number} options.numCols  (numRows, numCols) is the board size
+   * @param {number} options.rowClicked  (rowClicked, colClicked) is the grid clicked by user at the first time
+   * @param {number} options.colClicked  (rowClicked, colClicked) is the grid clicked by user at the first time
+   * @param {number} options.numMines  numMines is the number of bombs that we want on the board
+   */
+  constructor({ numRows, numCols, rowClicked, colClicked, numMines }) {
+    this.numRows = numRows;
+    this.numCols = numCols;
+    this.rowClicked = rowClicked;
+    this.colClicked = colClicked;
+    this.numMines = numMines;
+  }
 
-  function shuffle(array) {
-    /**
-     * to shuffle an array, based of Fisher-Yates algorithm
-     */
-    var currentIndex = array.length,
+  /**
+   * To shuffle an array, based of Fisher-Yates algorithm
+   * 
+   * @template T
+   * @returns {Array<T>} shuffeled array 
+   * @param {Array<T>} array 
+   */
+  _shuffle(array) {
+    let currentIndex = array.length,
       temporaryValue,
       randomIndex;
 
@@ -30,19 +50,21 @@ module.exports = (function () {
     return array;
   }
 
-  function flattenBoard(numRows, numCols, rowClicked, colClicked, numMines) {
+  /**
+   * @returns {Array<Array<number>>} Array of coordinates (e.g. `[[1,2], [1,3], [1,4]]`)
+   */
+  _flattenBoard() {
     /**
-     * (numRows, numCols) is the board size
-     * (rowClicked, colClicked) is the grid clicked by user at the first time
-     * numMines is the number of bombs that we want on the board
-     * return the flattened board
-     * @type {Array}
+     * @type {Array<Array<number>>}
      */
-    var grids = [];
-    for (var i = 0; i < numRows; ++i) {
-      for (var j = 0; j < numCols; ++j) {
+    let grids = [];
+    for (let i = 0; i < this.numRows; ++i) {
+      for (let j = 0; j < this.numCols; ++j) {
         // skip if the grid is around the clicked grid
-        if (Math.abs(i - rowClicked) <= 1 && Math.abs(j - colClicked) <= 1)
+        if (
+          Math.abs(i - this.rowClicked) <= 1 &&
+          Math.abs(j - this.colClicked) <= 1
+        )
           continue;
         grids.push([i, j]);
       }
@@ -50,58 +72,82 @@ module.exports = (function () {
     return grids;
   }
 
-  function inBoard(numRows, numCols, row, col) {
-    return 0 <= row && row < numRows && 0 <= col && col < numCols;
+  /**
+   * @returns {boolean} Whether row and col is in board
+   * @param {number} row 
+   * @param {number} col 
+   */
+  _inBoard(row, col) {
+    return 0 <= row && row < this.numRows && 0 <= col && col < this.numCols;
   }
 
-  function inEdge(numRows, numCols, row, col) {
-    return 0 == row || row == numRows - 1 || 0 == col || col == numCols - 1;
+  /**
+   * @returns {boolean} Whether row and col is in edge
+   * @param {number} row 
+   * @param {number} col 
+   */
+  _inEdge(row, col) {
+    return (
+      0 == row || row == this.numRows - 1 || 0 == col || col == this.numCols - 1
+    );
   }
 
-  function inCorner(numRows, numCols, row, col) {
-    return (0 == row || row == numRows - 1) && (0 == col || col == numCols - 1);
+  /**
+   * @returns {boolean} Whether row and col is in corner
+   * @param {number} row 
+   * @param {number} col 
+   */
+  _inCorner(row, col) {
+    return (
+      (0 == row || row == this.numRows - 1) &&
+      (0 == col || col == this.numCols - 1)
+    );
   }
 
-  function placeMines(numRows, numCols, shuffledGrids, numMines) {
+  /**
+   * 
+   * @param {Array<Array<number>>} shuffledGrids Array of coordinates
+   * @returns {Array<Array<number>>} 2D array of size numRows x numCols, 0 for bomb, 1 - 8 for bombs count
+   */
+  _placeMines(shuffledGrids) {
     /**
-     * (numRows, numCols) is the board size
-     * numMines is the number of bombs that we want on the board
-     * return grids: 2D array, 9 for bomb, 1 - 8 for bombs count
-     * @type {Array}
+     * @type {Array<Array<number>>}
      */
-    var grids = new Array(numRows);
-    for (var i = 0; i < numRows; ++i) grids[i] = new Array(numCols);
+    let grids = new Array(this.numRows);
+    for (let i = 0; i < this.numRows; ++i) grids[i] = new Array(this.numCols);
 
-    for (var i = 0; i < numRows; ++i)
-      for (var j = 0; j < numCols; ++j) grids[i][j] = 0;
+    for (let i = 0; i < this.numRows; ++i)
+      for (let j = 0; j < this.numCols; ++j) grids[i][j] = 0;
 
-    var hasMines = new Array(numRows);
-    for (var i = 0; i < numRows; ++i) {
-      hasMines[i] = new Array(numCols);
-      for (var j = 0; j < numCols; ++j) hasMines[i][j] = false;
+    let hasMines = new Array(this.numRows);
+    for (let i = 0; i < this.numRows; ++i) {
+      hasMines[i] = new Array(this.numCols);
+      for (let j = 0; j < this.numCols; ++j) hasMines[i][j] = false;
     }
 
-    for (var i = 0; i < shuffledGrids.length; ++i) {
-      var coordinate = shuffledGrids[i];
+    let numMines = this.numMines;
+
+    for (let i = 0; i < shuffledGrids.length; ++i) {
+      let coordinate = shuffledGrids[i];
 
       if (numMines == 0) break;
 
-      var hasEight = false,
+      let hasEight = false,
         hasFive = false,
         hasTwo = false;
 
-      for (var k = 0; k < dr.length; ++k) {
-        var row = coordinate[0] + dr[k],
+      for (let k = 0; k < dr.length; ++k) {
+        let row = coordinate[0] + dr[k],
           col = coordinate[1] + dc[k];
 
-        if (inBoard(numRows, numCols, row, col)) {
+        if (this._inBoard(row, col)) {
           ++grids[row][col];
 
-          if (inCorner(numRows, numCols, row, col)) {
+          if (this._inCorner(row, col)) {
             hasTwo = hasTwo || grids[row][col] === 2;
           }
 
-          if (inEdge(numRows, numCols, row, col)) {
+          if (this._inEdge(row, col)) {
             hasFive = hasFive || grids[row][col] === 5;
           }
 
@@ -110,11 +156,11 @@ module.exports = (function () {
       }
 
       if (hasTwo || hasFive || hasEight) {
-        for (var k = 0; k < dr.length; ++k) {
-          var row = coordinate[0] + dr[k],
+        for (let k = 0; k < dr.length; ++k) {
+          let row = coordinate[0] + dr[k],
             col = coordinate[1] + dc[k];
 
-          if (inBoard(numRows, numCols, row, col)) --grids[row][col];
+          if (this._inBoard(row, col)) --grids[row][col];
         }
       } else {
         --numMines;
@@ -122,8 +168,8 @@ module.exports = (function () {
       }
     }
 
-    for (var i = 0; i < numRows; ++i) {
-      for (var j = 0; j < numCols; ++j) {
+    for (let i = 0; i < this.numRows; ++i) {
+      for (let j = 0; j < this.numCols; ++j) {
         if (hasMines[i][j]) grids[i][j] = 9;
       }
     }
@@ -131,21 +177,16 @@ module.exports = (function () {
     return grids;
   }
 
-  function generate(numRows, numCols, rowClicked, colClicked, numMines) {
-    /**
-     * (numRows, numCols) is the board size
-     * (rowClicked, colClicked) is the coordinate clicked the first time
-     * numMines is the number of bombs we want on the board
-     * return grids: 2D array, 0 for bomb, 1 - 8 for bombs count
-     */
-    shuffledGrids = shuffle(
-      flattenBoard(numRows, numCols, rowClicked, colClicked, numMines)
-    );
-    grids = placeMines(numRows, numCols, shuffledGrids, numMines);
+  /**
+   * @returns {Array<Array<number>>} 2D array, 0 for bomb, 1 - 8 for bombs count
+   */
+  generate() {
+    let shuffledGrids = this._shuffle(this._flattenBoard());
+    let grids = this._placeMines(shuffledGrids);
     return grids;
   }
+}
 
-  return {
-    generate: generate,
-  };
-})();
+module.exports = {
+  default: BoardGenerator,
+};
